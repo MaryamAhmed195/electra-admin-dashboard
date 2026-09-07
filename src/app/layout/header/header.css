@@ -1,0 +1,132 @@
+.electra-header {
+  height: 72px;
+  background: #ffffff;
+  border-bottom: 1px solid #ebe8ff;
+  box-shadow: 0 2px 12px rgba(78, 61, 180, 0.04);
+  z-index: 1030;
+}
+
+.electra-logo {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  color: #17164a;
+  font-size: 24px;
+  font-weight: 800;
+
+  text-decoration: none;
+}
+
+.logo-icon {
+  color: #6c4cff;
+  font-size: 29px;
+}
+
+.notification-btn {
+  width: 44px;
+  height: 44px;
+
+  border: none;
+  border-radius: 12px;
+
+  background: #f8f7ff;
+
+  font-size: 17px;
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.notification-btn:hover {
+  background: #eee9ff;
+}
+
+.notification-dot {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+
+  width: 8px;
+  height: 8px;
+
+  background: #ef4444;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  color: #17164a;
+}
+
+.profile-avatar {
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #eee9ff;
+  color: #6c4cff;
+
+  font-weight: 700;
+}
+
+.profile-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.profile-arrow {
+  color: #74739a;
+  font-size: 18px;
+}
+
+.navbar-toggler {
+  border-color: #ebe8ff;
+}
+
+.navbar-toggler:focus {
+  box-shadow: 0 0 0 3px #eee9ff;
+}
+
+/* Mobile offcanvas */
+
+.offcanvas {
+  width: 280px;
+}
+
+.offcanvas-title {
+  color: #17164a;
+}
+
+.offcanvas-body {
+  background: #ffffff;
+}
+
+.offcanvas .nav-link {
+  padding: 12px 14px;
+  border-radius: 10px;
+  color: #4b4a70;
+  font-weight: 600;
+}
+
+.offcanvas .nav-link:hover {
+  background: #f1eeff;
+  color: #6c4cff;
+}
+
+.offcanvas .nav-link.active {
+  background: #eee9ff;
+  color: #6c4cff;
+}
+.electra-text {
+  color: #6c4cff;
+}
