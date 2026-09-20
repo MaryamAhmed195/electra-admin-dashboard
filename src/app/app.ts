@@ -4,9 +4,10 @@ import { Product } from './shared/models/product';
 import { Header } from './layout/header/header';
 import { Sidebar } from './layout/sidebar/sidebar';
 import { StatCard } from './shared/components/stat-card/stat-card';
-
+import { ProductCard } from './shared/components/product-card/product-card';
+import { ConfirmDialog } from './shared/components/confirm-dialog/confirm-dialog';
 @Component({
-  imports: [RouterOutlet, Header, Sidebar, StatCard],
+  imports: [RouterOutlet, Header, Sidebar, StatCard, ProductCard, ConfirmDialog],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
@@ -45,4 +46,26 @@ export class App {
       isActive: false,
     },
   ];
+  showConfirm = false;
+  selectedProductId: number | null = null;
+
+  handleDelete(id: number) {
+    this.selectedProductId = id;
+    this.showConfirm = true;
+  }
+  confirmDelete() {
+    if (this.selectedProductId !== null) {
+      this.products = this.products.filter((product) => product.id !== this.selectedProductId);
+    }
+    this.showConfirm = false;
+    this.selectedProductId = null;
+  }
+
+  cancelDelete() {
+    this.showConfirm = false;
+    this.selectedProductId = null;
+  }
+  handleView(id: number) {
+    console.log('view product:', id);
+  }
 }

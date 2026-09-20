@@ -43,41 +43,11 @@
       <div class="row g-4">
         @for (product of products; track product.id) {
           <div class="col-12 col-md-6 col-lg-4">
-            <div class="product-card">
-              <div class="product-content">
-                <div class="product-info">
-                  <h5>
-                    {{ product.name }}
-                  </h5>
-
-                  <p>
-                    Price: <strong>${{ product.price }}</strong>
-                  </p>
-
-                  <p>Stock: {{ product.stock }}</p>
-
-                  <div class="badges">
-                    @if (product.stock > 0) {
-                      <span class="stock-badge in-stock"> In Stock </span>
-                    } @else {
-                      <span class="stock-badge out-stock"> Out of Stock </span>
-                    }
-
-                    @if (product.isActive) {
-                      <span class="status-badge active"> Active </span>
-                    } @else {
-                      <span class="status-badge inactive"> Inactive </span>
-                    }
-                  </div>
-                </div>
-              </div>
-
-              <div class="product-footer">
-                <button class="view-btn">👁 View Details</button>
-
-                <button class="more-btn">⋮</button>
-              </div>
-            </div>
+            <app-product-card
+              [product]="product"
+              (deleteProduct)="handleDelete($event)"
+              (viewProduct)="handleView($event)"
+            ></app-product-card>
           </div>
         } @empty {
           <div class="col-12">
@@ -89,6 +59,13 @@
           </div>
         }
       </div>
+      @if (showConfirm) {
+        <app-confirm-dialog
+          [message]="'Are you sure you want to delete this product?'"
+          (confirmed)="confirmDelete()"
+          (cancelled)="cancelDelete()"
+        ></app-confirm-dialog>
+      }
     </main>
   </div>
 </div>

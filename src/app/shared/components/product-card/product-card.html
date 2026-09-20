@@ -1,0 +1,35 @@
+<div class="product-card">
+  <div class="product-content">
+    <div class="product-info">
+      <h5>
+        {{ product()?.name }}
+      </h5>
+
+      <p>
+        Price: <strong>${{ product()?.price }}</strong>
+      </p>
+
+      <p>Stock: {{ product()?.stock }}</p>
+
+      <div class="badges">
+        @if (product()?.stock! > 0) {
+          <span class="stock-badge in-stock"> In Stock </span>
+        } @else {
+          <span class="stock-badge out-stock"> Out of Stock </span>
+        }
+
+        @if (product()?.isActive) {
+          <span class="status-badge active"> Active </span>
+        } @else {
+          <span class="status-badge inactive"> Inactive </span>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="product-footer">
+    <button class="view-btn" (click)="handleView()">👁 View Details</button>
+
+    <button class="more-btn" (click)="handleDelete()">⋮</button>
+  </div>
+</div>
