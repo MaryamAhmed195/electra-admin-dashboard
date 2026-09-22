@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Product } from './shared/models/product';
 import { Header } from './layout/header/header';
@@ -6,6 +6,8 @@ import { Sidebar } from './layout/sidebar/sidebar';
 import { StatCard } from './shared/components/stat-card/stat-card';
 import { ProductCard } from './shared/components/product-card/product-card';
 import { ConfirmDialog } from './shared/components/confirm-dialog/confirm-dialog';
+import { ProductService } from './shared/services/product.service';
+import { CategoryService } from './shared/services/category.service';
 @Component({
   imports: [RouterOutlet, Header, Sidebar, StatCard, ProductCard, ConfirmDialog],
   selector: 'app-root',
@@ -13,39 +15,18 @@ import { ConfirmDialog } from './shared/components/confirm-dialog/confirm-dialog
   templateUrl: './app.html',
 })
 export class App {
+  private productService = inject(ProductService);
+  private categoryService = inject(CategoryService);
+  categories = this.categoryService.getCategories();
+  products = this.productService.getProducts();
   protected readonly title = signal('firstproject');
 
   productsCount = 128;
   ordersCount = 36;
-  categoriesCount = 5;
+  categoriesCount = this.categories().length;
   revenue = 8450;
 
-  products: Product[] = [
-    {
-      id: 1,
-      name: 'Sony WH-1000XM5',
-      categoryId: 1,
-      price: 399,
-      stock: 12,
-      isActive: true,
-    },
-    {
-      id: 2,
-      name: 'MacBook Air M3',
-      categoryId: 2,
-      price: 1099,
-      stock: 5,
-      isActive: true,
-    },
-    {
-      id: 3,
-      name: 'iPhone 15',
-      categoryId: 3,
-      price: 799,
-      stock: 0,
-      isActive: false,
-    },
-  ];
+  product = this.productService.getProducts();
   showConfirm = false;
   selectedProductId: number | null = null;
 
@@ -55,7 +36,7 @@ export class App {
   }
   confirmDelete() {
     if (this.selectedProductId !== null) {
-      this.products = this.products.filter((product) => product.id !== this.selectedProductId);
+      this.productService.deleteProduct(this.selectedProductId);
     }
     this.showConfirm = false;
     this.selectedProductId = null;
