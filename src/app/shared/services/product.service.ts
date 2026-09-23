@@ -1,38 +1,43 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import { Product } from '../models/product';
-
+import { HttpClient } from '@angular/common/http';
 @Injectable({
   providedIn: 'root',
 })
 export class ProductService {
-  private products = signal<Product[]>([
-    {
-      id: 1,
-      name: 'Sony WH-1000XM5',
-      categoryId: 1,
-      price: 399,
-      stock: 12,
-      isActive: true,
-    },
-    {
-      id: 2,
-      name: 'MacBook Air M3',
-      categoryId: 2,
-      price: 1099,
-      stock: 5,
-      isActive: true,
-    },
-    {
-      id: 3,
-      name: 'iPhone 15',
-      categoryId: 3,
-      price: 799,
-      stock: 0,
-      isActive: false,
-    },
-  ]);
+  private http = inject(HttpClient);
+  private products = signal<Product[]>([]);
+  private loading = signal(true);
+  private error = signal('');
+
+  constructor() {
+    this.loadProducts();
+  }
+
+  loadProducts() {
+    this.loading.set(true);
+    this.error.set('');
+    this.http.get<Product[]>('/data/products.json').subscribe({
+      next: (data) => {
+        this.products.set(data);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.error.set('Failed to load products.');
+        this.loading.set(false);
+      },
+    });
+  }
+
   getProducts() {
     return this.products.asReadonly();
+  }
+  isLoading() {
+    return this.loading.asReadonly();
+  }
+
+  getError() {
+    return this.error.asReadonly();
   }
   deleteProduct(id: number) {
     this.products.update((products) => products.filter((product) => product.id !== id));

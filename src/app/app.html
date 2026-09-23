@@ -41,22 +41,32 @@
       </div>
 
       <div class="row g-4">
-        @for (product of products(); track product.id) {
-          <div class="col-12 col-md-6 col-lg-4">
-            <app-product-card
-              [product]="product"
-              (deleteProduct)="handleDelete($event)"
-              (viewProduct)="handleView($event)"
-            ></app-product-card>
+        @if (loading()) {
+          <p>Loading products...</p>
+        } @else if (error()) {
+          <div class="alert alert-danger">
+            <p class="mb-2">{{ error() }}</p>
+
+            <button class="btn btn-danger" (click)="retryProducts()">Retry</button>
           </div>
-        } @empty {
-          <div class="col-12">
-            <div class="empty-state">
-              📦
-              <h5>No products found</h5>
-              <p>There are no products to display.</p>
+        } @else {
+          @for (product of products(); track product.id) {
+            <div class="col-12 col-md-6 col-lg-4">
+              <app-product-card
+                [product]="product"
+                (deleteProduct)="handleDelete($event)"
+                (viewProduct)="handleView($event)"
+              ></app-product-card>
             </div>
-          </div>
+          } @empty {
+            <div class="col-12">
+              <div class="empty-state">
+                📦
+                <h5>No products found</h5>
+                <p>There are no products to display.</p>
+              </div>
+            </div>
+          }
         }
       </div>
       @if (showConfirm) {

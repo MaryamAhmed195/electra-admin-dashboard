@@ -19,6 +19,8 @@ export class App {
   private categoryService = inject(CategoryService);
   categories = this.categoryService.getCategories();
   products = this.productService.getProducts();
+  loading = this.productService.isLoading();
+  error = this.productService.getError();
   protected readonly title = signal('firstproject');
 
   productsCount = 128;
@@ -40,6 +42,9 @@ export class App {
     }
     this.showConfirm = false;
     this.selectedProductId = null;
+  }
+  retryProducts() {
+    this.productService.loadProducts();
   }
 
   cancelDelete() {
