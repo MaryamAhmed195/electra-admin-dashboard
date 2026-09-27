@@ -1,0 +1,56 @@
+.sidebar {
+  min-height: 100vh;
+  background: #17164a;
+  padding: 24px 16px;
+  border-radius: 0 18px 18px 0;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px 28px;
+  color: white;
+}
+
+.brand-icon {
+  font-size: 24px;
+}
+
+.brand-name {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  color: #d9d6f5;
+  text-decoration: none;
+  font-weight: 500;
+  transition: 0.2s ease;
+}
+
+.nav-link:hover {
+  background: #2a2764;
+  color: white;
+}
+
+.nav-link.active {
+  background: #6c4cff;
+  color: white;
+}
+
+.nav-icon {
+  width: 24px;
+  text-align: center;
+}
