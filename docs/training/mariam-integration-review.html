@@ -1,0 +1,1396 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Electra Integration Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Readex+Pro:wght@500;600;700&display=swap">
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f5f5fa;
+    --surface: #ffffff;
+    --surface-2: #efeef8;
+    --ink: #1b1a3a;
+    --muted: #5d5b7a;
+    --line: #e1e0ee;
+    --accent: #5b3df5;
+    --accent-soft: #ebe7ff;
+    --navy: #17164a;
+    --navy-ink: #e9e7ff;
+    --must: #b8322a;
+    --must-soft: #fdecea;
+    --improve: #95600f;
+    --improve-soft: #fdf3e1;
+    --later: #4f5d75;
+    --later-soft: #e9edf3;
+    --ok: #1c7a50;
+    --ok-soft: #e3f4ec;
+    --term-bg: #15142e;
+    --term-ink: #dcdaf5;
+    --term-err: #ff7b72;
+    --term-dim: #8e8bb8;
+
+    --f-display: "Readex Pro", "IBM Plex Sans Arabic", "Segoe UI", Tahoma, sans-serif;
+    --f-body: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, sans-serif;
+    --f-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
+    --radius: 10px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #11102a;
+      --surface: #1a1938;
+      --surface-2: #22204a;
+      --ink: #ecebf7;
+      --muted: #a8a6c8;
+      --line: #2e2c58;
+      --accent: #a594ff;
+      --accent-soft: #2a2560;
+      --navy: #0b0a20;
+      --navy-ink: #e9e7ff;
+      --must: #ff8a80;
+      --must-soft: #3a1c26;
+      --improve: #f2bf62;
+      --improve-soft: #36291a;
+      --later: #a9b6cc;
+      --later-soft: #252a40;
+      --ok: #6fd3a2;
+      --ok-soft: #173229;
+      --term-bg: #0b0a1e;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #11102a;
+    --surface: #1a1938;
+    --surface-2: #22204a;
+    --ink: #ecebf7;
+    --muted: #a8a6c8;
+    --line: #2e2c58;
+    --accent: #a594ff;
+    --accent-soft: #2a2560;
+    --navy: #0b0a20;
+    --navy-ink: #e9e7ff;
+    --must: #ff8a80;
+    --must-soft: #3a1c26;
+    --improve: #f2bf62;
+    --improve-soft: #36291a;
+    --later: #a9b6cc;
+    --later-soft: #252a40;
+    --ok: #6fd3a2;
+    --ok-soft: #173229;
+    --term-bg: #0b0a1e;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--f-body);
+    font-size: 16px;
+    line-height: 1.8;
+    padding-inline: 16px;
+    padding-block: 0 64px;
+  }
+  a { color: var(--accent); }
+  a:focus-visible, input:focus-visible, textarea:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  code, .path {
+    font-family: var(--f-mono);
+    font-size: 0.86em;
+    direction: ltr;
+    unicode-bidi: isolate;
+  }
+  p code, li code, td code, label code, span code {
+    background: var(--surface-2);
+    padding: 1px 6px;
+    border-radius: 5px;
+  }
+  h1, h2, h3, h4 { font-family: var(--f-display); text-wrap: balance; line-height: 1.35; margin: 0; }
+
+  /* ---------- Masthead ---------- */
+  .masthead {
+    margin-inline: -16px;
+    background: var(--navy);
+    color: var(--navy-ink);
+    padding-inline: 16px;
+    padding-block: 40px 44px;
+  }
+  .masthead-inner { max-width: 1120px; margin-inline: auto; display: grid; gap: 14px; }
+  .eyebrow {
+    font-family: var(--f-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #b7adff;
+    direction: ltr;
+    text-align: right;
+  }
+  .masthead h1 { font-size: clamp(28px, 4.4vw, 42px); font-weight: 700; color: #fff; }
+  .masthead h1 .bolt { color: #b7adff; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 14px; color: #c9c5f2; }
+  .meta code { background: rgba(255,255,255,0.08); color: #fff; padding: 1px 7px; border-radius: 5px; }
+  .masthead .lead { max-width: 68ch; font-size: 17px; color: #e3e0ff; margin: 6px 0 0; }
+
+  /* ---------- Layout ---------- */
+  .shell {
+    max-width: 1120px;
+    margin-inline: auto;
+    display: grid;
+    grid-template-columns: 230px minmax(0, 1fr);
+    gap: 40px;
+    padding-top: 36px;
+  }
+  .toc {
+    position: sticky;
+    top: calc(env(safe-area-inset-top, 0px) + 20px);
+    align-self: start;
+    font-size: 14px;
+    display: grid;
+    gap: 14px;
+  }
+  .toc h2 { font-size: 13px; color: var(--muted); font-weight: 600; letter-spacing: 0.02em; }
+  .toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  .toc a {
+    display: flex; align-items: center; gap: 8px;
+    color: var(--ink); text-decoration: none;
+    padding: 4px 8px; border-radius: 6px;
+  }
+  .toc a:hover { background: var(--surface-2); }
+  .toc .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+  .toc .group-label { font-size: 12px; color: var(--muted); padding: 8px 8px 2px; }
+  .overall {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    display: grid;
+    gap: 8px;
+  }
+  .overall strong { font-family: var(--f-display); font-size: 20px; font-variant-numeric: tabular-nums; direction: ltr; text-align: right; }
+  .bar { height: 6px; background: var(--surface-2); border-radius: 99px; overflow: hidden; }
+  .bar span { display: block; height: 100%; width: 0; background: var(--ok); border-radius: 99px; transition: width .3s ease; }
+  @media (prefers-reduced-motion: reduce) { .bar span { transition: none; } }
+  .overall small { color: var(--muted); font-size: 12px; line-height: 1.6; }
+
+  main { display: grid; gap: 56px; min-width: 0; }
+  section > h2 { font-size: 26px; margin-bottom: 18px; }
+  .section-intro { color: var(--muted); max-width: 68ch; margin: -8px 0 22px; }
+  .prose p { max-width: 68ch; margin: 0 0 12px; }
+
+  /* ---------- Before you start ---------- */
+  .steps { margin: 0; padding-inline-start: 22px; display: grid; gap: 6px; max-width: 68ch; }
+  .callout {
+    background: var(--accent-soft);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    max-width: 68ch;
+    margin: 16px 0;
+  }
+  .callout p { margin: 0; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 18px; }
+  .rule-box { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; }
+  .rule-box h4 { font-size: 15px; margin-bottom: 8px; }
+  .rule-box ul { margin: 0; padding-inline-start: 20px; display: grid; gap: 4px; }
+  .rule-box.yes h4 { color: var(--ok); }
+  .rule-box.no h4 { color: var(--must); }
+  .rule-foot { margin-top: 14px; font-weight: 500; }
+
+  /* ---------- Priority board ---------- */
+  .table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: start; padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-family: var(--f-display); font-weight: 600; font-size: 13px; color: var(--muted); background: var(--surface-2); }
+  tr:last-child td { border-bottom: 0; }
+  td.num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; color: var(--muted); width: 3em; }
+  td a { color: var(--ink); text-decoration: none; }
+  td a:hover { color: var(--accent); text-decoration: underline; }
+  .legend { display: grid; gap: 8px; margin-top: 16px; max-width: 72ch; font-size: 15px; }
+  .legend div { display: flex; gap: 10px; align-items: baseline; }
+
+  .pill {
+    display: inline-block;
+    font-family: var(--f-mono);
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    padding: 2px 9px;
+    border-radius: 99px;
+    white-space: nowrap;
+    direction: ltr;
+  }
+  .pill.must { background: var(--must-soft); color: var(--must); }
+  .pill.improve { background: var(--improve-soft); color: var(--improve); }
+  .pill.later { background: var(--later-soft); color: var(--later); }
+  .dot.must { background: var(--must); }
+  .dot.improve { background: var(--improve); }
+  .dot.later { background: var(--later); }
+
+  /* ---------- Problem cards ---------- */
+  .group-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+  .group-head h2 { font-size: 26px; }
+  .problems { display: grid; gap: 28px; }
+  .problem {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    scroll-margin-top: 20px;
+  }
+  .p-head {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 16px;
+    align-items: center;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--line);
+  }
+  .problem[data-sev="must"] .p-head { border-top: 4px solid var(--must); }
+  .problem[data-sev="improve"] .p-head { border-top: 4px solid var(--improve); }
+  .p-num {
+    font-family: var(--f-mono);
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .p-title { display: grid; gap: 4px; }
+  .p-title h3 { font-size: 20px; font-weight: 600; }
+  .p-progress {
+    font-family: var(--f-mono);
+    font-size: 12.5px;
+    color: var(--muted);
+    background: var(--surface-2);
+    padding: 3px 10px;
+    border-radius: 99px;
+    font-variant-numeric: tabular-nums;
+    direction: ltr;
+    white-space: nowrap;
+  }
+  .p-progress.complete { background: var(--ok-soft); color: var(--ok); }
+  .p-body { padding: 20px 22px 24px; display: grid; gap: 22px; }
+  .field h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.02em;
+    margin-bottom: 8px;
+  }
+  .field p { margin: 0 0 8px; max-width: 68ch; }
+  .field p:last-child { margin-bottom: 0; }
+  .field ul, .field ol { margin: 0; padding-inline-start: 22px; display: grid; gap: 5px; max-width: 70ch; }
+
+  .loc { list-style: none; margin: 0; padding: 0 !important; display: grid; gap: 8px !important; }
+  .loc li {
+    display: grid;
+    gap: 2px;
+    background: var(--surface-2);
+    border-radius: 8px;
+    padding: 9px 12px;
+  }
+  .loc .path { font-size: 13.5px; color: var(--ink); text-align: left; overflow-wrap: anywhere; }
+  .loc .what { font-size: 14px; color: var(--muted); }
+  .loc .what code { background: var(--surface); }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    font-size: 13.5px;
+    padding: 3px 12px;
+    border-radius: 99px;
+    border: 1px solid var(--line);
+    background: var(--bg);
+  }
+
+  .questions { counter-reset: q; list-style: none; padding: 0 !important; }
+  .questions li { counter-increment: q; display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 8px; }
+  .questions li::before {
+    content: counter(q);
+    font-family: var(--f-mono);
+    font-size: 12px;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent);
+    display: grid; place-items: center;
+    margin-top: 3px;
+  }
+
+  .done { background: var(--ok-soft); border-radius: var(--radius); padding: 14px 16px; }
+  .done h4 { color: var(--ok); }
+  .checks { display: grid; gap: 8px; }
+  .check { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; align-items: start; cursor: pointer; }
+  .check input { width: 18px; height: 18px; margin: 5px 0 0; accent-color: var(--ok); cursor: pointer; }
+  .check input:checked + span { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--ok); }
+
+  .note label { display: block; font-family: var(--f-display); font-size: 13px; font-weight: 600; color: var(--accent); margin-bottom: 6px; }
+  .note textarea {
+    width: 100%;
+    min-height: 74px;
+    resize: vertical;
+    font: inherit;
+    font-size: 15px;
+    color: var(--ink);
+    background: var(--bg);
+    border: 1px dashed var(--line);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .note small { color: var(--muted); font-size: 12px; }
+
+  .terminal {
+    direction: ltr;
+    text-align: left;
+    background: var(--term-bg);
+    color: var(--term-ink);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    font-family: var(--f-mono);
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-x: auto;
+    margin: 0;
+    white-space: pre;
+  }
+  .terminal .cmd { color: #b7adff; }
+  .terminal .err { color: var(--term-err); }
+  .terminal .dim { color: var(--term-dim); }
+
+  .aside-note {
+    border-inline-start: 3px solid var(--accent);
+    padding: 4px 14px;
+    color: var(--ink);
+    max-width: 68ch;
+  }
+  .aside-note p { margin: 0; }
+  .warn-note { border-inline-start-color: var(--improve); }
+
+  .inner-table { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; }
+  .inner-table table { font-size: 14px; }
+  .inner-table th { background: var(--surface-2); }
+  .inner-table td:last-child { min-width: 130px; }
+
+  .split { display: grid; gap: 16px; }
+  .split-block { border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; display: grid; gap: 14px; }
+  .split-block > h4 { font-size: 16px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .split-block.later-block { background: var(--later-soft); border-color: transparent; }
+  .split-block.later-block p { margin: 0; max-width: 68ch; }
+  .split-block .sub { display: grid; gap: 10px; }
+  .split-block .sub h5 { font-family: var(--f-display); font-size: 15px; margin: 0; }
+
+  /* ---------- Later ---------- */
+  .later-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .later-list li {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    font-size: 15px;
+  }
+  .later-list li strong { display: block; font-family: var(--f-display); font-weight: 600; font-size: 15px; margin-bottom: 2px; }
+  .later-list li span { color: var(--muted); font-size: 14px; }
+
+  /* ---------- DoD ---------- */
+  .dod {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 22px;
+    display: grid;
+    gap: 16px;
+  }
+  .dod .checks { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 24px; }
+  .dod .check span { direction: ltr; text-align: left; }
+  .dod-actions { display: flex; justify-content: flex-start; }
+  .btn {
+    font: inherit;
+    font-size: 14px;
+    border: 1px solid var(--line);
+    background: var(--bg);
+    color: var(--ink);
+    border-radius: 8px;
+    padding: 6px 14px;
+    cursor: pointer;
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ---------- Explain / Challenge ---------- */
+  .explain { counter-reset: e; list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .explain li {
+    counter-increment: e;
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr);
+    gap: 12px;
+    align-items: start;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+  }
+  .explain li::before {
+    content: counter(e, decimal-leading-zero);
+    font-family: var(--f-mono);
+    color: var(--accent);
+    font-size: 14px;
+    padding-top: 2px;
+  }
+  .challenge {
+    background: var(--navy);
+    color: var(--navy-ink);
+    border-radius: 16px;
+    padding: 26px;
+    display: grid;
+    gap: 18px;
+  }
+  .challenge h2 { color: #fff; font-size: 26px; }
+  .challenge h4 { color: #b7adff; font-size: 13px; margin-bottom: 8px; }
+  .challenge ul, .challenge ol { margin: 0; padding-inline-start: 22px; display: grid; gap: 6px; max-width: 70ch; }
+  .challenge code { background: rgba(255,255,255,0.1); color: #fff; padding: 1px 6px; border-radius: 5px; }
+  .demo-badges { display: flex; flex-wrap: wrap; gap: 10px; }
+  .demo-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 10px 14px;
+    display: grid;
+    gap: 6px;
+    font-size: 14px;
+    direction: ltr;
+    text-align: left;
+    min-width: 0;
+  }
+  .demo-card b { font-family: var(--f-display); font-weight: 600; color: #fff; }
+  .tag { font-family: var(--f-mono); font-size: 11px; padding: 1px 8px; border-radius: 99px; justify-self: start; }
+  .tag.low { background: #f2bf62; color: #2b1d05; }
+  .tag.out { background: #ff8a80; color: #3a0b07; }
+  .tag.none { background: rgba(255,255,255,0.12); color: #d6d2ff; }
+
+  footer { max-width: 1120px; margin: 48px auto 0; color: var(--muted); font-size: 13px; }
+
+  @media (max-width: 900px) {
+    .shell { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+    .toc { position: static; }
+    .toc nav { display: none; }
+  }
+  @media (max-width: 640px) {
+    body { font-size: 15.5px; }
+    .two-col, .later-list, .dod .checks { grid-template-columns: minmax(0, 1fr); }
+    .p-head { grid-template-columns: auto minmax(0, 1fr); padding: 16px; }
+    .p-progress { grid-column: 2; justify-self: start; }
+    .p-body { padding: 16px 16px 20px; }
+    .challenge { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="eyebrow">Electra Admin Dashboard · Integration Review</div>
+    <h1><span class="bolt">⚡</span> مراجعة الربط: ما بنيتِه، وأين لا تترابط الأجزاء</h1>
+    <div class="meta">
+      <span>لـ<strong>مريم</strong></span>
+      <span>الحالة المراجَعة: commit <code>0ef165b</code> (Task 7)</span>
+      <span>Integration + Debugging + Code Understanding</span>
+    </div>
+    <p class="lead">أنتِ لا تبدئين Task جديدة من الصفر. هذه مراجعة لما بنيتِه بالفعل. التطبيق يعمل في أجزاء كثيرة، لكن توجد مشاكل تظهر عند ربط الأجزاء معًا. المطلوب أن تكتشفي سبب كل مشكلة وتصلحيها باستخدام المفاهيم التي تعلمتِها. لا يوجد هنا مفهوم جديد عليكِ.</p>
+  </div>
+</header>
+
+<div class="shell">
+  <aside class="toc" aria-label="المحتويات">
+    <div class="overall" aria-live="polite">
+      <small>تقدّمك في كل بنود Done When</small>
+      <strong id="overall-count">0 / 0</strong>
+      <div class="bar" aria-hidden="true"><span id="overall-bar"></span></div>
+      <small>العلامات والملاحظات تُحفظ في هذا المتصفح فقط، ولا يراها أحد غيرك.</small>
+    </div>
+    <nav>
+      <h2>المحتويات</h2>
+      <ol>
+        <li><a href="#start">قبل أن تبدئي</a></li>
+        <li><a href="#board">ملخص الأولويات</a></li>
+        <li class="group-label">Must Fix Now</li>
+        <li><a href="#p1"><span class="dot must"></span>Categories تظهر 0</a></li>
+        <li><a href="#p2"><span class="dot must"></span>أرقام Stat Cards ثابتة</a></li>
+        <li><a href="#p3"><span class="dot must"></span>الـlayout يختفي</a></li>
+        <li><a href="#p4"><span class="dot must"></span><code>ng build</code> يفشل</a></li>
+        <li><a href="#p5"><span class="dot must"></span><code>ng test</code> يفشل</a></li>
+        <li class="group-label">Understand &amp; Improve</li>
+        <li><a href="#p6"><span class="dot improve"></span>product input اختياري</a></li>
+        <li><a href="#p7"><span class="dot improve"></span>async غير متسق</a></li>
+        <li><a href="#p8"><span class="dot improve"></span>Debug و dead code</a></li>
+        <li><a href="#p9"><span class="dot improve"></span>روابط الموبايل</a></li>
+        <li><a href="#p10"><span class="dot improve"></span>Product Details</a></li>
+        <li><a href="#p11"><span class="dot improve"></span>زر X في الـdialog</a></li>
+        <li class="group-label">بعد ذلك</li>
+        <li><a href="#later"><span class="dot later"></span>Later</a></li>
+        <li><a href="#dod">Definition of Done</a></li>
+        <li><a href="#explain">Explain It Back</a></li>
+        <li><a href="#challenge">Final Challenge</a></li>
+      </ol>
+    </nav>
+  </aside>
+
+  <main>
+    <!-- ================= Before you start ================= -->
+    <section id="start" class="prose">
+      <h2>قبل أن تبدئي</h2>
+      <p>هذا الملف <strong>لا يحتوي على الحلول</strong>. لكل مشكلة ستجدين: أين هي، وما السلوك الذي ترينه بنفسك، ولماذا تستحق التحقيق، والمفهوم الذي تراجعينه، وأسئلة توجّه تفكيرك، ثم <strong>Done When</strong>: كيف تعرفين أن المشكلة انحلّت فعلًا.</p>
+      <div class="callout">
+        <p><strong>عن أرقام الأسطر:</strong> الأرقام هنا تقريبية وصحيحة في commit <code>0ef165b</code> فقط، وستتحرك بعد أول تعديل. اعتمدي على <strong>اسم الملف واسم الـproperty أو الـmethod</strong>.</p>
+      </div>
+
+      <h3 style="font-size:18px;margin:22px 0 10px">طريقة العمل</h3>
+      <ol class="steps">
+        <li>اشتغلي على مشكلة واحدة في كل مرة، بالترتيب.</li>
+        <li>قبل أي تعديل، شغّلي التطبيق وشاهدي المشكلة بعينك.</li>
+        <li>بعد الإصلاح، اكتبي في خانة <strong>السبب بكلماتي</strong> سطرًا أو اثنين.</li>
+        <li>اعملي commit منفصلًا لكل مشكلة، برسالة تصف ما تغيّر.</li>
+      </ol>
+
+      <div class="two-col">
+        <div class="rule-box yes">
+          <h4>استخدام الـAI المسموح</h4>
+          <ul>
+            <li>شرح رسالة error لا تفهمينها</li>
+            <li>شرح مفهوم أو صفحة من angular.dev</li>
+            <li>مراجعة الـdiff <strong>بعد</strong> أن تكتبيه أنتِ</li>
+          </ul>
+        </div>
+        <div class="rule-box no">
+          <h4>استخدام الـAI غير المسموح</h4>
+          <ul>
+            <li>"صلّح لي Problem 3"</li>
+            <li>لصق الملف كاملًا وطلب نسخة مصححة</li>
+            <li>توليد الـcomponent أو الـservice من جديد</li>
+          </ul>
+        </div>
+      </div>
+      <p class="rule-foot">القاعدة: أي سطر تعملين له commit، يجب أن تستطيعي شرحه لو سُئلتِ عنه.</p>
+    </section>
+
+    <!-- ================= Board ================= -->
+    <section id="board">
+      <h2>ملخص الأولويات</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>المشكلة</th><th>الأولوية</th></tr></thead>
+          <tbody>
+            <tr><td class="num">01</td><td><a href="#p1">Categories تظهر 0</a></td><td><span class="pill must">MUST FIX NOW</span></td></tr>
+            <tr><td class="num">02</td><td><a href="#p2">أرقام Stat Cards ثابتة (128 منتج)</a></td><td><span class="pill must">MUST FIX NOW</span></td></tr>
+            <tr><td class="num">03</td><td><a href="#p3">الـHeader والـSidebar يختفيان عند تغيير الصفحة</a></td><td><span class="pill must">MUST FIX NOW</span></td></tr>
+            <tr><td class="num">04</td><td><a href="#p4"><code>ng build</code> يفشل</a></td><td><span class="pill must">MUST FIX NOW</span></td></tr>
+            <tr><td class="num">05</td><td><a href="#p5"><code>ng test</code> يفشل</a></td><td><span class="pill must">MUST FIX NOW</span></td></tr>
+            <tr><td class="num">06</td><td><a href="#p6"><code>product</code> input اختياري مع <code>!</code> و<code>?.</code></a></td><td><span class="pill improve">UNDERSTAND &amp; IMPROVE</span></td></tr>
+            <tr><td class="num">07</td><td><a href="#p7">الـloading/error غير متسق بين الـServices</a></td><td><span class="pill improve">UNDERSTAND &amp; IMPROVE</span></td></tr>
+            <tr><td class="num">08</td><td><a href="#p8">Debug code وdead code</a></td><td><span class="pill improve">UNDERSTAND &amp; IMPROVE</span></td></tr>
+            <tr><td class="num">09</td><td><a href="#p9">روابط الموبايل لا تنقل لأي مكان</a></td><td><span class="pill improve">UNDERSTAND &amp; IMPROVE</span></td></tr>
+            <tr><td class="num">10</td><td><a href="#p10">صفحة Product Details</a></td><td><span class="pill improve">UNDERSTAND &amp; IMPROVE</span></td></tr>
+            <tr><td class="num">11</td><td><a href="#p11">زر X في ConfirmDialog لا يعمل</a></td><td><span class="pill improve">UNDERSTAND &amp; IMPROVE</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="legend">
+        <div><span class="pill must">MUST FIX NOW</span><span>المرحلة الحالية لا تعتبر مكتملة بدونها.</span></div>
+        <div><span class="pill improve">UNDERSTAND &amp; IMPROVE</span><span>مطلوب فهمها وتحسينها في نفس المرحلة، لكنها ليست blockers. لو علقتِ في واحدة منها، اسألي ولا تتوقفي عندها.</span></div>
+        <div><span class="pill later">LATER</span><span>في آخر الصفحة. لا تشتغلي عليها الآن.</span></div>
+      </div>
+    </section>
+
+    <!-- ================= MUST FIX NOW ================= -->
+    <section id="must">
+      <div class="group-head"><h2>Must Fix Now</h2><span class="pill must">5 PROBLEMS</span></div>
+      <p class="section-intro">مشاكل في سلوك التطبيق أو في الـbuild والـtests. هذه هي ما يفصل "يعمل عندي" عن "انتهت الـTask".</p>
+      <div class="problems">
+
+        <!-- P1 -->
+        <article class="problem" id="p1" data-sev="must">
+          <header class="p-head">
+            <span class="p-num">01</span>
+            <div class="p-title"><span><span class="pill must">MUST FIX NOW</span></span><h3>عدد الـCategories يظهر 0 مع وجود 5 Categories</h3></div>
+            <span class="p-progress" data-progress="p1">0/4</span>
+          </header>
+          <div class="p-body">
+            <div class="field">
+              <h4>أين المشكلة؟</h4>
+              <ul class="loc">
+                <li><span class="path">src/app/pages/dashboard/dashboard.ts</span><span class="what">Property: <code>categoriesCount</code> · حاليًا حوالي السطر 34</span></li>
+                <li><span class="path">src/app/shared/services/category.service.ts</span><span class="what">مصدر البيانات: <code>loadCategories()</code> و<code>getCategories()</code></span></li>
+                <li><span class="path">src/app/pages/dashboard/dashboard.html</span><span class="what">مكان العرض: الكارت الذي فيه <code>title="Categories"</code></span></li>
+                <li><span class="path">public/data/categories.json</span><span class="what">البيانات نفسها: 5 عناصر</span></li>
+              </ul>
+            </div>
+            <div class="field">
+              <h4>ماذا ألاحظ؟</h4>
+              <p>افتحي الـDashboard. كارت <strong>Categories</strong> يعرض <strong>0</strong>، مع أن <code>categories.json</code> يحتوي على 5 categories، والـservice يحمّلها بنجاح.</p>
+            </div>
+            <div class="field">
+              <h4>لماذا يستحق التحقيق؟</h4>
+              <p>لا يوجد error، ولا crash، ولا تحذير في الـconsole. التطبيق يعرض <strong>رقمًا خاطئًا بصمت</strong>. هذا أخطر نوع من الأخطاء في الشغل الحقيقي، لأنه لا يظهر إلا عندما يلاحظه شخص يعرف الرقم الصحيح.</p>
+            </div>
+            <div class="field">
+              <h4>راجعي هذا المفهوم</h4>
+              <div class="chips"><span class="chip">Signals: متى تُقرأ القيمة</span><span class="chip">Reactive / derived state</span><span class="chip">Synchronous مقابل asynchronous</span></div>
+            </div>
+            <div class="field">
+              <h4>أسئلة تساعدك على التفكير</h4>
+              <ol class="questions">
+                <li><span><strong>متى</strong> يتم تنفيذ السطر الذي يحسب <code>categoriesCount</code>؟ مرة واحدة أم كل مرة تتغير البيانات؟</span></li>
+                <li><span>في <strong>تلك اللحظة بالضبط</strong>، هل كان الـHTTP request قد رجع بالبيانات؟</span></li>
+                <li><span>عندما تنفّذ الـservice <code>set()</code> على الـcategories بعد وصول البيانات، هل يعرف <code>categoriesCount</code> بذلك؟</span></li>
+                <li><span>في <code>product-details.ts</code> توجد قيمة مشتقة من signal، وهي تتحدث بشكل صحيح بعد وصول البيانات. ما الفرق بين الطريقتين؟</span></li>
+              </ol>
+            </div>
+            <div class="field done">
+              <h4>Done When</h4>
+              <div class="checks">
+                <label class="check"><input type="checkbox" id="p1-d1"><span>كارت Categories يعرض العدد الحقيقي من الـJSON.</span></label>
+                <label class="check"><input type="checkbox" id="p1-d2"><span>لو تغيّر عدد الـcategories في الـJSON وأعدتِ تحميل الصفحة، يتغيّر الرقم بدون أي تعديل في الكود.</span></label>
+                <label class="check"><input type="checkbox" id="p1-d3"><span>لا يوجد رقم مكتوب يدويًا.</span></label>
+                <label class="check"><input type="checkbox" id="p1-d4"><span>تستطيعين شرح لماذا كان الرقم 0، وليس فقط ماذا غيّرتِ.</span></label>
+              </div>
+            </div>
+            <div class="note"><label for="p1-note">السبب بكلماتي</label><textarea id="p1-note" placeholder="لماذا كان الرقم 0؟"></textarea></div>
+          </div>
+        </article>
+
+        <!-- P2 -->
+        <article class="problem" id="p2" data-sev="must">
+          <header class="p-head">
+            <span class="p-num">02</span>
+            <div class="p-title"><span><span class="pill must">MUST FIX NOW</span></span><h3>أرقام Stat Cards لا تعبّر عن البيانات الحقيقية</h3></div>
+            <span class="p-progress" data-progress="p2">0/4</span>
+          </header>
+          <div class="p-body">
+            <div class="field">
+              <h4>أين المشكلة؟</h4>
+              <ul class="loc">
+                <li><span class="path">src/app/pages/dashboard/dashboard.ts</span><span class="what">Properties: <code>productsCount</code> و<code>ordersCount</code> و<code>revenue</code> · حاليًا بين السطرين 30 و36</span></li>
+                <li><span class="path">src/app/pages/dashboard/dashboard.html</span><span class="what">Block: الكروت الأربعة تحت التعليق <code>&lt;!-- Stat Cards --&gt;</code></span></li>
+              </ul>
+            </div>
+            <div class="field">
+              <h4>ماذا ألاحظ؟</h4>
+              <ul>
+                <li>كارت <strong>Total Products</strong> يعرض <strong>128</strong>، بينما قائمة المنتجات تحته تعرض <strong>3</strong> منتجات فقط.</li>
+                <li>احذفي منتجًا واحدًا من القائمة: القائمة تصبح 2، والكارت ما زال <strong>128</strong>.</li>
+              </ul>
+            </div>
+            <div class="field">
+              <h4>لماذا يستحق التحقيق؟</h4>
+              <p>الـDashboard الآن فيه <strong>مصدران للحقيقة</strong>: رقم مكتوب يدويًا، والبيانات الحقيقية في الـservice. عندما يختلفان، لا يعرف المستخدم أيهما يصدّق.</p>
+            </div>
+            <div class="field">
+              <h4>تمرين قبل التعديل</h4>
+              <p>اكتبي لكل كارت: هل له مصدر بيانات حقيقي موجود في المشروع الآن؟</p>
+              <div class="table-wrap inner-table">
+                <table>
+                  <thead><tr><th>الكارت</th><th>القيمة الحالية</th><th>هل توجد بيانات حقيقية له في المشروع؟</th><th>قراري</th></tr></thead>
+                  <tbody>
+                    <tr><td>Total Products</td><td><code>128</code></td><td>؟</td><td></td></tr>
+                    <tr><td>Total Orders</td><td><code>36</code></td><td>؟</td><td></td></tr>
+                    <tr><td>Categories</td><td>راجعي Problem 01</td><td>؟</td><td></td></tr>
+                    <tr><td>Revenue</td><td><code>8450</code></td><td>؟</td><td></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="field">
+              <h4>راجعي هذا المفهوم</h4>
+              <div class="chips"><span class="chip">Single source of truth</span><span class="chip">Derived state</span><span class="chip">بيانات حقيقية مقابل mock</span></div>
+            </div>
+            <div class="field">
+              <h4>أسئلة تساعدك على التفكير</h4>
+              <ol class="questions">
+                <li><span>من <strong>يملك</strong> قائمة المنتجات في التطبيق؟ ولماذا يوجد رقم آخر في مكان آخر؟</span></li>
+                <li><span>بعد الحذف، ما الذي تغيّر فعلًا، وما الذي لم يتغيّر؟ ولماذا؟</span></li>
+                <li><span>لا توجد بيانات orders في المشروع. ما الأفضل: رقم ثابت يبدو حقيقيًا، أم شيء يوضح للمستخدم أنه ليس حقيقيًا؟ ناقشي قرارك مع الـmentor.</span></li>
+                <li><span>هل يمكن حساب Revenue من البيانات الموجودة؟ ماذا يمثل حاصل ضرب <code>price × stock</code> فعلًا؟ هل هو revenue؟</span></li>
+              </ol>
+            </div>
+            <div class="field done">
+              <h4>Done When</h4>
+              <div class="checks">
+                <label class="check"><input type="checkbox" id="p2-d1"><span>أي كارت له بيانات حقيقية في المشروع يعرض الرقم الحقيقي.</span></label>
+                <label class="check"><input type="checkbox" id="p2-d2"><span>عند حذف منتج يتغيّر الرقم في الكارت <strong>فورًا ومن تلقاء نفسه</strong>.</span></label>
+                <label class="check"><input type="checkbox" id="p2-d3"><span>أي كارت ليس له بيانات حقيقية واضح أنه mock، أو اتخذتِ فيه قرارًا مع الـmentor.</span></label>
+                <label class="check"><input type="checkbox" id="p2-d4"><span>جدول التمرين أعلاه مملوء (في ملاحظاتك أو في وصف الـPR).</span></label>
+              </div>
+            </div>
+            <div class="note"><label for="p2-note">السبب بكلماتي</label><textarea id="p2-note" placeholder="لماذا لم يتغير الرقم بعد الحذف؟"></textarea></div>
+          </div>
+        </article>
+
+        <!-- P3 -->
+        <article class="problem" id="p3" data-sev="must">
+          <header class="p-head">
+            <span class="p-num">03</span>
+            <div class="p-title"><span><span class="pill must">MUST FIX NOW</span></span><h3>الـHeader والـSidebar يختفيان عند الانتقال من Dashboard</h3></div>
+            <span class="p-progress" data-progress="p3">0/4</span>
+          </header>
+          <div class="p-body">
+            <div class="field">
+              <h4>أين المشكلة؟</h4>
+              <ul class="loc">
+                <li><span class="path">src/app/app.html</span><span class="what">ماذا يحتوي الآن؟</span></li>
+                <li><span class="path">src/app/pages/dashboard/dashboard.html</span><span class="what"><code>&lt;app-header&gt;</code> في أول الملف، و<code>&lt;app-sidebar&gt;</code> داخل عمود الـgrid الأول</span></li>
+                <li><span class="path">src/app/app.routes.ts</span><span class="what">ما الـcomponent المسؤول عن كل route؟</span></li>
+                <li><span class="path">src/app/pages/{products,orders,product-details,not-found}/*.html</span><span class="what">الصفحات الأخرى</span></li>
+              </ul>
+            </div>
+            <div class="field">
+              <h4>ماذا ألاحظ؟</h4>
+              <ol>
+                <li>افتحي <code>/</code> (الـDashboard): الـHeader والـSidebar موجودان.</li>
+                <li>اضغطي <strong>Products</strong> في الـSidebar: الصفحة تعرض "products works!"، <strong>والـHeader والـSidebar اختفيا</strong>.</li>
+                <li>لا توجد أي طريقة للرجوع غير زر Back في المتصفح.</li>
+                <li>نفس الشيء يحدث في <code>/products/1</code> وفي صفحة الـ404 (جربي <code>/abc</code>).</li>
+              </ol>
+            </div>
+            <div class="field">
+              <h4>لماذا يستحق التحقيق؟</h4>
+              <ul>
+                <li>المستخدم يضيع في التطبيق.</li>
+                <li><code>routerLinkActive</code> على رابط Products لا يمكن أن يظهر أبدًا، لأن الـSidebar غير موجود أصلًا عندما تكونين في <code>/products</code>. فكّري لماذا.</li>
+              </ul>
+            </div>
+            <div class="field">
+              <h4>راجعي هذا المفهوم</h4>
+              <div class="chips"><span class="chip">Router Outlet: ما الذي يتبدّل وما الذي يبقى</span><span class="chip">Application layout مقابل page content</span><span class="chip">Single responsibility</span></div>
+            </div>
+            <div class="field">
+              <h4>أسئلة تساعدك على التفكير</h4>
+              <ol class="questions">
+                <li><span>عندما يتغيّر الـURL، <strong>أي جزء بالضبط</strong> من الشاشة يستبدله الـRouter؟</span></li>
+                <li><span>ما الأجزاء التي يجب أن تبقى ثابتة في <strong>كل</strong> صفحات التطبيق؟ وأين هي الآن؟</span></li>
+                <li><span>هل <code>Dashboard</code> الآن "صفحة"، أم "صفحة + إطار التطبيق كله"؟</span></li>
+                <li><span>لو أضفنا 5 صفحات جديدة، كم مرة ستحتاجين أن تكتبي <code>&lt;app-sidebar&gt;</code> بالشكل الحالي؟</span></li>
+              </ol>
+            </div>
+            <div class="field done">
+              <h4>Done When</h4>
+              <div class="checks">
+                <label class="check"><input type="checkbox" id="p3-d1"><span>الـHeader والـSidebar ظاهران في <strong>كل</strong> الـroutes، بما فيها <code>/products/1</code> وصفحة الـ404.</span></label>
+                <label class="check"><input type="checkbox" id="p3-d2"><span>الرابط الـactive في الـSidebar يتغيّر حسب الصفحة الحالية.</span></label>
+                <label class="check"><input type="checkbox" id="p3-d3"><span>لا توجد صفحة تكرر الـlayout بداخلها.</span></label>
+                <label class="check"><input type="checkbox" id="p3-d4"><span>الـCSS الخاص بالـlayout موجود في مكان واحد فقط (راجعي أيضًا Problem 08).</span></label>
+              </div>
+            </div>
+            <div class="note"><label for="p3-note">السبب بكلماتي</label><textarea id="p3-note" placeholder="لماذا كان الـlayout يختفي؟"></textarea></div>
+          </div>
+        </article>
+
+        <!-- P4 -->
+        <article class="problem" id="p4" data-sev="must">
+          <header class="p-head">
+            <span class="p-num">04</span>
+            <div class="p-title"><span><span class="pill must">MUST FIX NOW</span></span><h3><code>ng build</code> يفشل</h3></div>
+            <span class="p-progress" data-progress="p4">0/3</span>
+          </header>
+          <div class="p-body">
+            <div class="field">
+              <h4>أين المشكلة؟</h4>
+<pre class="terminal"><span class="cmd">$ ng build</span>
+<span class="dim">…</span>
+<span class="err">✘ [ERROR] The 'products/:id' route uses prerendering and includes parameters,
+  but 'getPrerenderParams' is missing.</span>
+<span class="err">Application bundle generation failed.</span></pre>
+            </div>
+            <div class="field">
+              <h4>الملفات المرتبطة</h4>
+              <ul class="loc">
+                <li><span class="path">src/app/app.routes.server.ts</span><span class="what">كيف يتم render كل route على السيرفر؟</span></li>
+                <li><span class="path">src/app/app.routes.ts</span><span class="what">الـroute الذي فيه parameter</span></li>
+                <li><span class="path">angular.json</span><span class="what">خيارات <code>outputMode</code> و<code>ssr</code> داخل <code>build.options</code></span></li>
+              </ul>
+            </div>
+            <div class="field">
+              <h4>ماذا ألاحظ؟</h4>
+              <p><strong>التطبيق قد يعمل مع <code>ng serve</code>، لكن الـproduction build لا ينجح.</strong> مشكلة Task 7 ظهرت فقط عندما حاولنا عمل build. غالبًا لم يتم تشغيل <code>ng build</code> بعد إضافة الـroute الجديد.</p>
+            </div>
+            <div class="field">
+              <h4>لماذا يستحق التحقيق؟</h4>
+              <p>في الشغل الحقيقي، الـbuild هو ما يتم deploy له، وليس <code>ng serve</code>. <strong>Task يكسر الـbuild هو Task لم ينتهِ</strong>، حتى لو كان كل شيء يبدو ممتازًا في المتصفح.</p>
+            </div>
+            <div class="field">
+              <h4>راجعي هذا المفهوم</h4>
+              <div class="chips"><span class="chip">Definition of Done</span><span class="chip">Dev server مقابل production build</span><span class="chip">قراءة رسالة الـerror</span></div>
+            </div>
+            <div class="field">
+              <h4>أسئلة تساعدك على التفكير</h4>
+              <ol class="questions">
+                <li><span>الرسالة تذكر route محددًا. لماذا هذا الـroute تحديدًا، وليس <code>products</code> أو <code>orders</code>؟</span></li>
+                <li><span>"Prerendering" تعني تجهيز صفحات HTML وقت الـbuild. لكي يجهز الـbuild صفحة لـ<code>products/:id</code>، ماذا يجب أن يعرف مسبقًا؟</span></li>
+                <li><span>لماذا لم تظهر هذه المشكلة مع <code>ng serve</code>؟</span></li>
+                <li><span>متى كانت آخر مرة شغّلتِ فيها <code>ng build</code> قبل الـcommit؟</span></li>
+              </ol>
+            </div>
+            <div class="aside-note warn-note">
+              <p><strong>SSR وPrerendering ليسا موضوعًا مطلوبًا منك إتقانه الآن.</strong> اقرئي الـerror، وحددي الملف والـroute المسؤولين، وحاولي 30–45 دقيقة. إذا اتضح أن الحل infrastructure/configuration أكثر منه Angular fundamentals، اطلبي المساعدة، فهذا طبيعي تمامًا. المطلوب في هذه الحالة أن تستطيعي <strong>شرح سبب الفشل بكلماتك</strong>، حتى لو ساعدك أحد في الحل.</p>
+            </div>
+            <div class="field done">
+              <h4>Done When</h4>
+              <div class="checks">
+                <label class="check"><input type="checkbox" id="p4-d1"><span><code>ng build</code> ينجح بدون errors.</span></label>
+                <label class="check"><input type="checkbox" id="p4-d2"><span>تستطيعين شرح لماذا كان يفشل، وما الذي تغيّر.</span></label>
+                <label class="check"><input type="checkbox" id="p4-d3"><span>أصبح <code>ng build</code> جزءًا من عاداتك قبل أي commit ينهي Task.</span></label>
+              </div>
+            </div>
+            <div class="note"><label for="p4-note">السبب بكلماتي</label><textarea id="p4-note" placeholder="لماذا فشل الـbuild؟"></textarea></div>
+          </div>
+        </article>
+
+        <!-- P5 -->
+        <article class="problem" id="p5" data-sev="must">
+          <header class="p-head">
+            <span class="p-num">05</span>
+            <div class="p-title"><span><span class="pill must">MUST FIX NOW</span></span><h3><code>ng test</code> يفشل</h3></div>
+            <span class="p-progress" data-progress="p5">0/3</span>
+          </header>
+          <div class="p-body">
+            <div class="field">
+              <h4>أين المشكلة؟ الطبقة 1: الـtests لا تعمل compile أصلًا</h4>
+<pre class="terminal"><span class="cmd">$ ng test --watch=false</span>
+<span class="err">✘ TS2307: Cannot find module './category'</span>
+<span class="dim">    src/app/shared/services/category.spec.ts   (import، السطر 2)</span>
+<span class="err">✘ TS2307: Cannot find module './product'</span>
+<span class="dim">    src/app/shared/services/product.spec.ts    (import، السطر 2)</span></pre>
+            </div>
+            <div class="field">
+              <h4>الطبقة 2: تظهر فقط بعد إصلاح الطبقة الأولى</h4>
+              <p>جرّبنا ذلك على نسخة منفصلة من المشروع، وليس على مشروعك. ظهرت 4 tests فاشلة:</p>
+              <div class="table-wrap inner-table">
+                <table>
+                  <thead><tr><th>Spec file</th><th>Test</th><th>الرسالة المختصرة</th></tr></thead>
+                  <tbody>
+                    <tr><td><code>src/app/app.spec.ts</code></td><td><code>should render title</code></td><td>يبحث عن <code>h1</code> فيه <code>Hello, firstproject</code></td></tr>
+                    <tr><td><code>src/app/layout/sidebar/sidebar.spec.ts</code></td><td><code>should create</code></td><td><code>NG0201: No provider found for ActivatedRoute</code></td></tr>
+                    <tr><td><code>src/app/pages/dashboard/dashboard.spec.ts</code></td><td><code>should create</code></td><td><code>NG0201: No provider found for ActivatedRoute</code></td></tr>
+                    <tr><td><code>src/app/pages/product-details/product-details.spec.ts</code></td><td><code>should create</code></td><td><code>NG0201: No provider found for ActivatedRoute</code></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p style="margin-top:12px">وظهر أيضًا <strong>Unhandled error</strong>. اربطيه بـ<a href="#p7">Problem 07</a>:</p>
+<pre class="terminal"><span class="err">HttpErrorResponse: Http failure response for /data/categories.json</span></pre>
+            </div>
+            <div class="field">
+              <h4>ماذا ألاحظ؟</h4>
+              <p>ملفات الـ<code>.spec.ts</code> أنشأها Angular CLI تلقائيًا عندما أنشأتِ الـcomponents والـservices. بعد ذلك تغيّر الـproduction code، لكن الـtests بقيت كما هي.</p>
+            </div>
+            <div class="field">
+              <h4>لماذا يستحق التحقيق؟</h4>
+              <p><strong>عندما أغيّر production code، قد تحتاج الـtests إلى تحديث.</strong> مشروع لا تعمل فيه الـtests لن يعدّي CI في الشغل الحقيقي. المطلوب <strong>ليس</strong> تعلم testing architecture متقدم. المطلوب أن تجعلي الـtests الموجودة تعمل، وأن تفهمي لماذا توقفت.</p>
+            </div>
+            <div class="field">
+              <h4>راجعي هذا المفهوم</h4>
+              <div class="chips"><span class="chip">Imports بعد إعادة تسمية الملفات</span><span class="chip">Definition of Done</span><span class="chip">الـTest بيئة صغيرة منفصلة عن التطبيق</span></div>
+            </div>
+            <div class="field">
+              <h4>أسئلة تساعدك على التفكير</h4>
+              <ol class="questions">
+                <li><span><strong>الطبقة 1:</strong> ما اسم ملف الـservice الآن، وما اسم الـclass؟ وما الذي يحاول الـspec أن يعمل له import؟ ولاحظي: في المشروع أيضًا model اسمه <code>Category</code> وmodel اسمه <code>Product</code>. ما الذي كان يقصده الـspec بـ<code>Category</code>؟</span></li>
+                <li><span><strong><code>app.spec.ts</code>:</strong> ماذا يحتوي <code>App</code> الآن فعليًا بعد Task 7؟ هل ما يختبره هذا الـtest ما زال له معنى؟ ماذا <strong>يجب</strong> أن يختبر؟</span></li>
+                <li><span><strong><code>NG0201</code>:</strong> في التطبيق الحقيقي، من أين يأتي <code>ActivatedRoute</code> والـRouter؟ ابحثي في <code>app.config.ts</code>. هل بيئة الـtest تحصل على نفس الشيء تلقائيًا؟</span></li>
+                <li><span>لماذا تفشل <code>sidebar</code> و<code>dashboard</code> بنفس رسالة <code>product-details</code>، مع أن <code>Sidebar</code> لا يستخدم <code>ActivatedRoute</code> مباشرة؟</span></li>
+              </ol>
+            </div>
+            <div class="aside-note warn-note">
+              <p>إذا علقتِ في <code>NG0201</code> أكثر من 30 دقيقة، اسألي. هذا جزء من إعداد الـtests، وليس من Angular fundamentals. لكن اشرحي بعدها لماذا كان الـtest يفشل.</p>
+            </div>
+            <div class="field done">
+              <h4>Done When</h4>
+              <div class="checks">
+                <label class="check"><input type="checkbox" id="p5-d1"><span><code>ng test --watch=false</code> ينتهي وكل الـtests ناجحة.</span></label>
+                <label class="check"><input type="checkbox" id="p5-d2"><span>لم تحذفي أي test لمجرد أنه فاشل. إذا حذفتِ أو غيّرتِ test، فالسبب أنه لم يعد يعبّر عن الكود، وتستطيعين شرح ذلك.</span></label>
+                <label class="check"><input type="checkbox" id="p5-d3"><span>تستطيعين شرح سبب كل واحدة من الطبقتين.</span></label>
+              </div>
+            </div>
+            <div class="note"><label for="p5-note">السبب بكلماتي</label><textarea id="p5-note" placeholder="لماذا توقفت الـtests؟"></textarea></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ================= UNDERSTAND & IMPROVE ================= -->
+    <section id="improve">
+      <div class="group-head"><h2>Understand &amp; Improve</h2><span class="pill improve">6 PROBLEMS</span></div>
+      <p class="section-intro">ليست blockers، لكنها تكشف أين لا تترابط المفاهيم بعد. اشتغلي عليها في نفس المرحلة، ولو علقتِ اسألي.</p>
+      <div class="problems">
+
+        <!-- P6 -->
+        <article class="problem" id="p6" data-sev="improve">
+          <header class="p-head">
+            <span class="p-num">06</span>
+            <div class="p-title"><span><span class="pill improve">UNDERSTAND &amp; IMPROVE</span></span><h3><code>ProductCard</code> يعتبر الـproduct اختياريًا، مع أنه لا يعمل بدونه</h3></div>
+            <span class="p-progress" data-progress="p6">0/4</span>
+          </header>
+          <div class="p-body">
+            <div class="field">
+              <h4>أين المشكلة؟</h4>
+              <ul class="loc">
+                <li><span class="path">src/app/shared/components/product-card/product-card.ts</span><span class="what">Property: <code>product = input&lt;Product&gt;()</code> · حاليًا السطر 10</span></li>
+                <li><span class="path">src/app/shared/components/product-card/product-card.ts</span><span class="what">Methods: <code>handleDelete()</code> و<code>handleView()</code>، وفيهما <code>this.product()!.id</code></span></li>
+                <li><span class="path">src/app/shared/components/product-card/product-card.html</span><span class="what">كل <code>product()?.</code> (name وprice وstock وisActive)، والشرط <code>@if (product()?.stock! &gt; 0)</code></span></li>
+              </ul>
+            </div>
+            <div class="field">
+              <h4>ماذا ألاحظ؟</h4>
+              <p>لا شيء يظهر في الشاشة. المشكلة في الكود: الكود يقول للـcompiler "الـproduct ممكن يكون <code>undefined</code>"، ثم في كل مكان يُسكت الـcompiler بـ<code>!</code> أو يلتفّ حوله بـ<code>?.</code>.</p>
+            </div>
+            <div class="field">
+              <h4>لماذا يستحق التحقيق؟</h4>
+              <ul>
+                <li>الـ<code>!</code> <strong>وعد</strong> للـcompiler بأن القيمة موجودة. لو أُخلف الوعد، يحدث crash في الـruntime، والـcompiler لن ينبّهك لأنكِ طلبتِ منه ألا ينبّهك.</li>
+                <li>الـ<code>?.</code> في الـtemplate قد يخفي خطأً، فيعرض كارتًا فارغًا بدل أن يظهر الخطأ.</li>
+              </ul>
+            </div>
+            <div class="field">
+              <h4>راجعي هذا المفهوم</h4>
+              <div class="chips"><span class="chip">TypeScript: <code>undefined</code> و<code>!</code> و<code>?.</code></span><span class="chip">Required Inputs</span></div>
+            </div>
+            <div class="field">
+              <h4>أسئلة تساعدك على التفكير</h4>
+              <ol class="questions">
+                <li><span>ما الـtype الحقيقي لـ<code>product()</code> الآن؟ (مرري الماوس على <code>product</code> في VS Code)</span></li>
+                <li><span>هل يوجد أي موقف يُستخدم فيه <code>ProductCard</code> بدون product؟ ماذا يجب أن يحدث لو نسي أحد أن يمرره؟</span></li>
+                <li><span>هل من الأفضل أن يظهر الخطأ <strong>وقت الكتابة</strong> (compile time)، أم <strong>وقت التشغيل</strong>؟</span></li>
+                <li><span>طبّقي نفس السؤال على الـinputs في <code>StatCard</code> (<code>title</code> و<code>value</code> و<code>icon</code>) و<code>ConfirmDialog</code> (<code>message</code>): أيها required فعلًا؟</span></li>
+              </ol>
+            </div>
+            <div class="field done">
+              <h4>Done When</h4>
+              <div class="checks">
+                <label class="check"><input type="checkbox" id="p6-d1"><span>لا يوجد <code>!</code> مرتبط بالـproduct في <code>ProductCard</code>.</span></label>
+                <label class="check"><input type="checkbox" id="p6-d2"><span>لا يوجد <code>?.</code> في template الكارت إلا إذا كان له سبب حقيقي.</span></label>
+                <label class="check"><input type="checkbox" id="p6-d3"><span>لو استُخدم <code>&lt;app-product-card&gt;</code> بدون product، يظهر <strong>compile error</strong> وليس خطأ runtime. جرّبي ذلك مؤقتًا ثم ارجعي عنه.</span></label>
+                <label class="check"><input type="checkbox" id="p6-d4"><span>تستطيعين شرح قرارك لكل input في <code>StatCard</code> و<code>ConfirmDialog</code>.</span></label>
+              </div>
+            </div>
+            <div class="note"><label for="p6-note">السبب بكلماتي</label><textarea id="p6-note" placeholder="ماذا كان الـ! يخفي؟"></textarea></div>
+          </div>
+        </article>
+
+        <!-- P7 -->
+        <article class="problem" id="p7" data-sev="improve">
+          <header class="p-head">
+            <span class="p-num">07</span>
+            <div class="p-title"><span><span class="pill improve">UNDERSTAND &amp; IMPROVE</span></span><h3>التعامل مع البيانات غير المتزامنة غير متسق بين الـServices</h3></div>
+            <span class="p-progress" data-progress="p7">0/3</span>
+          </header>
+          <div class="p-body">
+            <div class="field">
+              <h4>أين المشكلة؟</h4>
+              <ul class="loc">
+                <li><span class="path">src/app/shared/services/product.service.ts</span><span class="what">Signals خاصة للـloading والـerror. <code>loadProducts()</code> يرجّع الـstate لقيمته الأولى قبل الطلب، ويتعامل مع <code>next</code> و<code>error</code>. وفيه <code>isLoading()</code> و<code>getError()</code>.</span></li>
+                <li><span class="path">src/app/shared/services/category.service.ts</span><span class="what"><code>loadCategories()</code> يتعامل مع <code>next</code> <strong>فقط</strong>. لا يوجد loading state، ولا error state، ولا error handler.</span></li>
+                <li><span class="path">src/app/pages/dashboard/dashboard.html</span><span class="what">يعرض loading وerror للمنتجات فقط</span></li>
+              </ul>
+            </div>
+            <div class="field">
+              <h4>ماذا ألاحظ؟</h4>
+              <p><strong>تجربة:</strong> غيّري الـURL في <code>CategoryService</code> <strong>مؤقتًا</strong> إلى ملف غير موجود، ثم شغّلي التطبيق. ماذا ترين في كارت Categories؟ وماذا ترين في الـconsole؟ ثم أرجعي الـURL كما كان.</p>
+              <p>وتذكري الـ<code>HttpErrorResponse</code> الذي ظهر كـUnhandled error في الـtests (<a href="#p5">Problem 05</a>).</p>
+            </div>
+            <div class="field">
+              <h4>لماذا يستحق التحقيق؟</h4>
+              <p>إذا فشل تحميل الـcategories، سيرى المستخدم <strong>"0"</strong>. الـ0 يبدو كرقم حقيقي ("لا توجد categories")، وليس رسالة "حدث خطأ". المستخدم لا يستطيع التفريق.</p>
+            </div>
+            <div class="field">
+              <h4>راجعي هذا المفهوم</h4>
+              <div class="chips"><span class="chip">Loading / Error / Empty states</span><span class="chip">معالجة الـerror في <code>subscribe</code></span><span class="chip">الاتساق بين أجزاء الكود</span></div>
+            </div>
+            <div class="field">
+              <h4>أسئلة تساعدك على التفكير</h4>
+              <ol class="questions">
+                <li><span>ما الفرق بين "لا توجد categories" و"لم نستطع تحميل الـcategories"؟ كيف يعرف المستخدم الفرق؟</span></li>
+                <li><span>لماذا فكّرتِ في الـloading والـerror في <code>ProductService</code> ولم تفكري فيهما في <code>CategoryService</code>؟</span></li>
+                <li><span>ما <strong>أقل</strong> قدر من التعديل يجعل الـservice الثاني يتصرف بنفس منطق الأول؟</span></li>
+              </ol>
+            </div>
+            <div class="aside-note warn-note">
+              <p><strong>لا نطلب</strong> base class، ولا generic state service، ولا أي architecture متقدم. المطلوب نفس المستوى البسيط الموجود في <code>ProductService</code>.</p>
+            </div>
+            <div class="field done">
+              <h4>Done When</h4>
+              <div class="checks">
+                <label class="check"><input type="checkbox" id="p7-d1"><span>لو فشل تحميل الـcategories، لا يظهر رقم مضلل على أنه حقيقي.</span></label>
+                <label class="check"><input type="checkbox" id="p7-d2"><span>لا يوجد Unhandled HTTP error من الـcategories في الـconsole أو في الـtests.</span></label>
+                <label class="check"><input type="checkbox" id="p7-d3"><span>الـservices الاثنان يتبعان نفس المنطق في التعامل مع الـloading والـerror.</span></label>
+              </div>
+            </div>
+            <div class="note"><label for="p7-note">السبب بكلماتي</label><textarea id="p7-note" placeholder="ما الذي كان ناقصًا في CategoryService؟"></textarea></div>
+          </div>
+        </article>
+
+        <!-- P8 -->
+        <article class="problem" id="p8" data-sev="improve">
+          <header class="p-head">
+            <span class="p-num">08</span>
+            <div class="p-title"><span><span class="pill improve">UNDERSTAND &amp; IMPROVE</span></span><h3>Debug code وDead code وبقايا Tasks قديمة</h3></div>
+            <span class="p-progress" data-progress="p8">0/4</span>
+          </header>
+          <div class="p-body">
+            <div class="field">
+              <h4>أين المشكلة؟</h4>
+              <p><strong>لا تحذفي تلقائيًا.</strong> لكل عنصر، قرري: هل ما زال له وظيفة؟ ضعي علامة بعد أن تتخذي قرارًا وتكتبي سببه.</p>
+              <div class="checks" style="margin-top:10px">
+                <label class="check"><input type="checkbox" id="p8-c1"><span><code>stat-card.ts</code>: <code>ngOnInit()</code> وفيه <code>console.log('StatCard initialized')</code>، ومعه <code>implements OnInit</code> والـimport الخاص به.</span></label>
+                <label class="check"><input type="checkbox" id="p8-c2"><span><code>stat-card.ts</code>: <code>handleClick()</code> وفيه <code>console.log</code>. هل هو مربوط بأي شيء في <code>stat-card.html</code>؟</span></label>
+                <label class="check"><input type="checkbox" id="p8-c3"><span><code>stat-card.ts</code>: property اسمها <code>showValue</code>. أين تُستخدم؟</span></label>
+                <label class="check"><input type="checkbox" id="p8-c4"><span><code>confirm-dialog.ts</code>: <code>console.log</code> داخل <code>handleConfirm()</code> و<code>handleCancel()</code>.</span></label>
+                <label class="check"><input type="checkbox" id="p8-c5"><span><code>sidebar.ts</code>: property اسمها <code>isOpen</code>. أين تُستخدم؟</span></label>
+                <label class="check"><input type="checkbox" id="p8-c6"><span><code>app.css</code> و<code>dashboard.css</code> <strong>متطابقان تمامًا</strong> (111 سطرًا). ما الذي يعرضه <code>app.html</code> الآن؟ هل يُستخدم أي class من <code>app.css</code>؟</span></label>
+              </div>
+              <div class="aside-note" style="margin-top:14px">
+                <p><strong>لا تلمسي:</strong> زر <code>+ Add Product</code> في <code>dashboard.html</code> لا يفعل شيئًا الآن، لكنه <strong>ليس dead code</strong>. هو مكان Task قادمة (Forms).</p>
+              </div>
+            </div>
+            <div class="field">
+              <h4>ماذا ألاحظ؟</h4>
+              <p>افتحي الـDevTools Console، ثم افتحي الـDashboard. ستجدين <code>StatCard initialized</code> مكررة، وكذلك في terminal الـ<code>ng serve</code> بسبب SSR.</p>
+            </div>
+            <div class="field">
+              <h4>لماذا يستحق التحقيق؟</h4>
+              <ul>
+                <li>الـ<code>console.log</code> في الـproduction يملأ الـconsole بضجيج، ويخفي الرسائل المهمة.</li>
+                <li>الـdead code يجعل من يقرأ الكود يسأل: "هل هذا مستخدم؟ هل أستطيع حذفه؟"</li>
+                <li>الـCSS المكرر يعني أن تعديل التصميم يجب أن يتم مرتين، أو ينسى أحد المكانين.</li>
+              </ul>
+            </div>
+            <div class="field">
+              <h4>راجعي هذا المفهوم</h4>
+              <div class="chips"><span class="chip">Definition of Done</span><span class="chip">Component styles تنطبق على template الـcomponent فقط</span></div>
+            </div>
+            <div class="field">
+              <h4>أسئلة تساعدك على التفكير</h4>
+              <ol class="questions">
+                <li><span>هذه الأشياء أُضيفت لتجربة شيء ما (مثل lifecycle). هل انتهت التجربة؟</span></li>
+                <li><span>لو حذفتِ <code>app.css</code>، هل سيتغير أي شيء في الشاشة؟ كيف تتأكدين قبل الحذف؟</span></li>
+                <li><span>بعد <a href="#p3">Problem 03</a>، أين يجب أن يوجد الـCSS الخاص بالـlayout؟</span></li>
+              </ol>
+            </div>
+            <div class="field done">
+              <h4>Done When</h4>
+              <div class="checks">
+                <label class="check"><input type="checkbox" id="p8-d1"><span>كل عنصر في القائمة أعلاه له قرار وسبب.</span></label>
+                <label class="check"><input type="checkbox" id="p8-d2"><span>لا يوجد <code>console.log</code> خاص بالـdebugging في الكود.</span></label>
+                <label class="check"><input type="checkbox" id="p8-d3"><span>لا يوجد CSS مكرر بين ملفين.</span></label>
+                <label class="check"><input type="checkbox" id="p8-d4"><span>التطبيق يبدو ويعمل بنفس الشكل بعد التنظيف.</span></label>
+              </div>
+            </div>
+            <div class="note"><label for="p8-note">قراراتي وأسبابها</label><textarea id="p8-note" placeholder="مثال: showValue: غير مستخدمة لأن…"></textarea></div>
+          </div>
+        </article>
+
+        <!-- P9 -->
+        <article class="problem" id="p9" data-sev="improve">
+          <header class="p-head">
+            <span class="p-num">09</span>
+            <div class="p-title"><span><span class="pill improve">UNDERSTAND &amp; IMPROVE</span></span><h3>روابط قائمة الموبايل لا تنقل إلى أي صفحة</h3></div>
+            <span class="p-progress" data-progress="p9">0/4</span>
+          </header>
+          <div class="p-body">
+            <div class="field">
+              <h4>أين المشكلة؟</h4>
+              <div class="table-wrap inner-table">
+                <table>
+                  <thead><tr><th colspan="3"><code>src/app/layout/header/header.html</code></th></tr>
+                  <tr><th>الجزء</th><th>السطر تقريبًا</th><th>ماذا يوجد الآن</th></tr></thead>
+                  <tbody>
+                    <tr><td>لوجو Electra (<code>navbar-brand</code>)</td><td>16</td><td><code>href="#"</code></td></tr>
+                    <tr><td>رابط Dashboard في الـoffcanvas</td><td>57</td><td><code>href="#"</code>، وclass <code>active</code> مكتوب ثابتًا</td></tr>
+                    <tr><td>رابط Products في الـoffcanvas</td><td>61</td><td><code>href="#"</code></td></tr>
+                    <tr><td>رابط Categories في الـoffcanvas</td><td>65</td><td><code>href="#"</code>، <strong>ولا يوجد route لـCategories</strong> في <code>app.routes.ts</code></td></tr>
+                    <tr><td>رابط Orders في الـoffcanvas</td><td>69</td><td><code>href="#"</code></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="field">
+              <h4>ماذا ألاحظ؟</h4>
+              <ol>
+                <li>صغّري عرض المتصفح، أو استخدمي Device Toolbar في الـDevTools.</li>
+                <li>افتحي القائمة من زر ☰ واضغطي Products.</li>
+                <li>لاحظي الـURL: ماذا يحدث؟ هل تغيّرت الصفحة؟</li>
+                <li>وأنتِ في عرض الموبايل، كم <strong>قائمة navigation</strong> ترين في الصفحة؟</li>
+              </ol>
+            </div>
+            <div class="field">
+              <h4>لماذا يستحق التحقيق؟</h4>
+              <p>في Task 7 تحدّث الـSidebar ليستخدم الـRouter، لكن قائمة الموبايل بقيت كما كانت قبل الـRouting. أصبح في التطبيق <strong>نظاما navigation</strong>: واحد يعمل، والآخر لا. وفيه رابط لصفحة غير موجودة.</p>
+            </div>
+            <div class="field">
+              <h4>راجعي هذا المفهوم</h4>
+              <div class="chips"><span class="chip"><code>routerLink</code> مقابل <code>href</code></span><span class="chip"><code>routerLinkActive</code></span><span class="chip">Routing consistency</span></div>
+            </div>
+            <div class="field">
+              <h4>أسئلة تساعدك على التفكير</h4>
+              <ol class="questions">
+                <li><span>ما الفرق في السلوك بين <code>href</code> و<code>routerLink</code> داخل تطبيق Angular؟</span></li>
+                <li><span>هل يجب أن يوجد رابط Categories الآن؟ ما القرار الصحيح لرابط يشير إلى صفحة غير موجودة؟</span></li>
+                <li><span>لو أضفنا صفحة جديدة، في كم مكان يجب أن تضيفي رابطها بالشكل الحالي؟</span></li>
+                <li><span>هل class الـ<code>active</code> الثابت على Dashboard صحيح في كل الصفحات؟</span></li>
+              </ol>
+            </div>
+            <div class="field done">
+              <h4>Done When</h4>
+              <div class="checks">
+                <label class="check"><input type="checkbox" id="p9-d1"><span>كل رابط في الـHeader، بما فيه اللوجو، ينقل إلى الصفحة الصحيحة بدون reload.</span></label>
+                <label class="check"><input type="checkbox" id="p9-d2"><span>لا يوجد رابط لـroute غير موجود.</span></label>
+                <label class="check"><input type="checkbox" id="p9-d3"><span>الرابط الـactive يعبّر عن الصفحة الحالية، وليس قيمة ثابتة.</span></label>
+                <label class="check"><input type="checkbox" id="p9-d4"><span>جرّبتِ الـnavigation في عرض الموبايل والـdesktop.</span></label>
+              </div>
+            </div>
+            <div class="note"><label for="p9-note">السبب بكلماتي</label><textarea id="p9-note" placeholder="لماذا لم تكن الروابط تنقل؟"></textarea></div>
+          </div>
+        </article>
+
+        <!-- P10 -->
+        <article class="problem" id="p10" data-sev="improve">
+          <header class="p-head">
+            <span class="p-num">10</span>
+            <div class="p-title"><span><span class="pill improve">UNDERSTAND &amp; IMPROVE</span></span><h3>صفحة Product Details</h3></div>
+            <span class="p-progress" data-progress="p10">0/4</span>
+          </header>
+          <div class="p-body">
+            <div class="field">
+              <h4>أين المشكلة؟</h4>
+              <ul class="loc">
+                <li><span class="path">src/app/pages/product-details/product-details.ts</span><span class="what"><code>productId</code> (قراءة الـparam من الـroute)، و<code>product</code> (البحث عن المنتج)</span></li>
+                <li><span class="path">src/app/pages/product-details/product-details.html</span><span class="what">سطر <code>Category ID: …</code> (حاليًا حوالي السطر 9)، والـ<code>@else</code> الخاص بـ"Product not found"</span></li>
+              </ul>
+            </div>
+            <div class="split">
+              <div class="split-block">
+                <h4><span class="pill improve">افعليه في هذه المرحلة</span></h4>
+                <div class="sub">
+                  <h5>أ) Category ID بدل اسم الـCategory</h5>
+                  <div class="field"><h4>ماذا ألاحظ؟</h4><p>افتحي <code>/products/1</code>: الصفحة تعرض <code>Category ID: 1</code>. المستخدم لا يعرف ماذا يعني "1".</p></div>
+                  <div class="field"><h4>راجعي هذا المفهوم</h4><div class="chips"><span class="chip">أكثر من service في نفس الـcomponent</span><span class="chip"><code>find</code></span><span class="chip">Derived state (نفس فكرة 01)</span></div></div>
+                  <div class="field">
+                    <h4>أسئلة تساعدك على التفكير</h4>
+                    <ol class="questions">
+                      <li><span>أين توجد أسماء الـcategories في التطبيق الآن؟ هل هذه الصفحة تستطيع الوصول إليها؟</span></li>
+                      <li><span>البيانات تأتي من <strong>مصدرين</strong> غير متزامنين. ماذا يجب أن يحدث لو وصل أحدهما قبل الآخر؟</span></li>
+                      <li><span>ماذا يجب أن يُعرض لو كان للمنتج <code>categoryId</code> غير موجود في قائمة الـcategories؟</span></li>
+                    </ol>
+                  </div>
+                </div>
+                <div class="sub">
+                  <h5>ب) الرجوع من الصفحة</h5>
+                  <p style="margin:0;max-width:68ch">بعد حل <a href="#p3">Problem 03</a> ارجعي هنا: هل يوجد الآن طريق واضح لمغادرة الصفحة؟ إذا كان الـSidebar كافيًا، لا تضيفي شيئًا. إذا لم يكن كافيًا، قرري ما الناقص.</p>
+                </div>
+                <div class="field done">
+                  <h4>Done When</h4>
+                  <div class="checks">
+                    <label class="check"><input type="checkbox" id="p10-d1"><span>الصفحة تعرض اسم الـcategory.</span></label>
+                    <label class="check"><input type="checkbox" id="p10-d2"><span>الاسم يظهر صحيحًا بغض النظر عن أي طلب HTTP يرجع أولًا.</span></label>
+                    <label class="check"><input type="checkbox" id="p10-d3"><span>لا يحدث crash إذا لم توجد الـcategory.</span></label>
+                    <label class="check"><input type="checkbox" id="p10-d4"><span>قررتِ هل الصفحة تحتاج طريق رجوع إضافيًا، وتستطيعين شرح القرار.</span></label>
+                  </div>
+                </div>
+              </div>
+              <div class="split-block later-block">
+                <h4><span class="pill later">CAN IMPROVE LATER</span> لاحظيه ولا تعدّليه الآن</h4>
+                <p><strong>Loading مقابل Not Found:</strong> <code>product()</code> يكون <code>undefined</code> في حالتين مختلفتين: البيانات لم تصل بعد، أو الـid غير موجود. الصفحة لا تفرق بينهما. في الإعداد الحالي غالبًا لن تلاحظي مشكلة بسبب SSR. لكن فكّري: <strong>لو كانت البيانات بطيئة، ماذا سيرى المستخدم في أول ثانية؟</strong></p>
+                <p><strong>قراءة الـparam مرة واحدة:</strong> طريقة قراءة <code>productId</code> الحالية تعمل بشكل صحيح طالما أن كل انتقال لمنتج يبدأ من صفحة أخرى. ستفهمين الفرق لاحقًا عندما يوجد انتقال من منتج إلى منتج داخل نفس الصفحة. <strong>لا تغيّريها الآن.</strong></p>
+              </div>
+            </div>
+            <div class="note"><label for="p10-note">السبب بكلماتي</label><textarea id="p10-note" placeholder="كيف وصلتِ لاسم الـcategory؟"></textarea></div>
+          </div>
+        </article>
+
+        <!-- P11 -->
+        <article class="problem" id="p11" data-sev="improve">
+          <header class="p-head">
+            <span class="p-num">11</span>
+            <div class="p-title"><span><span class="pill improve">UNDERSTAND &amp; IMPROVE</span></span><h3>زر X في ConfirmDialog لا يفعل شيئًا</h3></div>
+            <span class="p-progress" data-progress="p11">0/2</span>
+          </header>
+          <div class="p-body">
+            <div class="field">
+              <h4>أين المشكلة؟</h4>
+              <ul class="loc">
+                <li><span class="path">src/app/shared/components/confirm-dialog/confirm-dialog.html</span><span class="what">زر الـ<code>btn-close</code> داخل <code>modal-header</code> · حاليًا السطر 7</span></li>
+              </ul>
+            </div>
+            <div class="field">
+              <h4>ماذا ألاحظ؟</h4>
+              <ol>
+                <li>اضغطي زر الحذف (⋮) على أي كارت: يظهر الـdialog.</li>
+                <li>اضغطي <strong>Cancel</strong>: يُغلق.</li>
+                <li>افتحيه مرة أخرى واضغطي <strong>X</strong>: لا يحدث شيء.</li>
+              </ol>
+            </div>
+            <div class="field">
+              <h4>لماذا يستحق التحقيق؟</h4>
+              <p>زر ظاهر وقابل للضغط ولا يفعل شيئًا يربك المستخدم. هو يتوقع أن X تغلق النافذة.</p>
+            </div>
+            <div class="field">
+              <h4>راجعي هذا المفهوم</h4>
+              <div class="chips"><span class="chip">Event binding</span><span class="chip">Outputs: من يقرر إغلاق الـdialog؟</span></div>
+            </div>
+            <div class="field">
+              <h4>أسئلة تساعدك على التفكير</h4>
+              <ol class="questions">
+                <li><span>من المسؤول عن إخفاء الـdialog الآن عند الضغط على Cancel؟ اتبعي المسار من الزر إلى الـparent.</span></li>
+                <li><span>من منظور المستخدم، هل X تعني شيئًا مختلفًا عن Cancel؟</span></li>
+              </ol>
+            </div>
+            <div class="field done">
+              <h4>Done When</h4>
+              <div class="checks">
+                <label class="check"><input type="checkbox" id="p11-d1"><span>الضغط على X يغلق الـdialog بدون حذف أي شيء.</span></label>
+                <label class="check"><input type="checkbox" id="p11-d2"><span>لم تتغير مسؤوليات الـdialog: ما زال لا يعرف أي شيء عن المنتجات.</span></label>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ================= LATER ================= -->
+    <section id="later">
+      <div class="group-head"><h2>Later: لا تشتغلي على هذا الآن</h2><span class="pill later">LATER</span></div>
+      <p class="section-intro">لاحظنا الأشياء التالية، لكن ليس هذا وقتها. هدف هذه المرحلة هو ترابط ما تعرفينه، وليس إضافة مفاهيم جديدة.</p>
+      <ul class="later-list">
+        <li><strong>SSR / Prerendering بعمق</strong><span>المطلوب الآن فقط أن يعدّي الـbuild (Problem 04).</span></li>
+        <li><strong>Lazy loading للـroutes</strong><span>سيأتي مع تنظيم الـarchitecture.</span></li>
+        <li><strong>Feature-folder refactoring</strong><span><code>product-card</code> و<code>product.service</code> موجودان في <code>shared/</code> وهما ليسا مشتركين فعلًا.</span></li>
+        <li><strong>Accessibility المتقدمة</strong><span>Labels للأزرار التي فيها رموز فقط (⋮ و🔔)، وfocus management داخل الـdialog، وإغلاقه بـEscape.</span></li>
+        <li><strong>RxJS المتقدم و<code>httpResource</code></strong><span>وتحميل الـdata خارج الـconstructor.</span></li>
+        <li><strong>الـroute param كـstream</strong><span>الجزء المؤجل من Problem 10.</span></li>
+        <li><strong>Loading مقابل Not Found</strong><span>في Product Details، الجزء المؤجل من Problem 10.</span></li>
+        <li><strong>توحيد الـstate كـsignals</strong><span><code>showConfirm</code> و<code>selectedProductId</code> في Dashboard حاليًا properties عادية.</span></li>
+        <li><strong>Currency pipe</strong><span>بدل كتابة <code>$</code> يدويًا، وتنسيق الأرقام.</span></li>
+        <li><strong>كتابة tests جديدة</strong><span>المطلوب الآن فقط أن تعمل الـtests الموجودة (Problem 05).</span></li>
+        <li><strong>صفحتا Products وOrders</strong><span>ما زالتا "works!". ستكون لهما Task منفصلة.</span></li>
+      </ul>
+    </section>
+
+    <!-- ================= DoD ================= -->
+    <section id="dod">
+      <h2>Definition of Done</h2>
+      <p class="section-intro">استخدمي هذه القائمة بعد كل Task من الآن، وليس فقط في هذه المرحلة.</p>
+      <div class="dod">
+        <div class="checks">
+          <label class="check"><input type="checkbox" id="dod-1"><span>Feature behavior works</span></label>
+          <label class="check"><input type="checkbox" id="dod-2"><span>Tested the normal scenario</span></label>
+          <label class="check"><input type="checkbox" id="dod-3"><span>Tested empty / error scenarios where relevant</span></label>
+          <label class="check"><input type="checkbox" id="dod-4"><span>Navigation still works (all pages, desktop + mobile)</span></label>
+          <label class="check"><input type="checkbox" id="dod-5"><span>No accidental hardcoded values</span></label>
+          <label class="check"><input type="checkbox" id="dod-6"><span>No debug console.log</span></label>
+          <label class="check"><input type="checkbox" id="dod-7"><span>No obvious dead code</span></label>
+          <label class="check"><input type="checkbox" id="dod-8"><span>ng build passes</span></label>
+          <label class="check"><input type="checkbox" id="dod-9"><span>ng test passes</span></label>
+          <label class="check"><input type="checkbox" id="dod-10"><span>I can explain the data flow</span></label>
+          <label class="check"><input type="checkbox" id="dod-11"><span>I can make a small change without regenerating the feature with AI</span></label>
+        </div>
+        <div class="dod-actions"><button type="button" class="btn" id="dod-reset">إعادة القائمة للـTask التالية</button></div>
+      </div>
+    </section>
+
+    <!-- ================= Explain ================= -->
+    <section id="explain">
+      <h2>Explain It Back</h2>
+      <p class="section-intro">بعد انتهاء الإصلاحات، يجب أن تستطيعي الإجابة عن هذه الأسئلة من مشروعك، وأنتِ تفتحين الملفات. ليس من الذاكرة، وليس بتعريفات نظرية.</p>
+      <ol class="explain">
+        <li><span>كيف تتحرك الـProducts من <code>products.json</code> حتى تظهر داخل <code>ProductCard</code>؟ مرّي على كل ملف في الطريق.</span></li>
+        <li><span>من <strong>يملك</strong> الـproduct state؟ ومن يستطيع تغييره؟ ولماذا؟</span></li>
+        <li><span>لماذا لا يحذف <code>ProductCard</code> المنتج بنفسه؟</span></li>
+        <li><span>عندما تحذفين منتجًا، ما كل الأماكن في الشاشة التي تتحدث؟ وكيف عرفت أنها يجب أن تتحدث؟</span></li>
+        <li><span>ماذا يحدث بالضبط عندما تتغير قيمة signal؟</span></li>
+        <li><span>ما الفرق بين قيمة محسوبة <strong>مرة واحدة</strong> وقيمة <strong>derived/reactive</strong>؟ أعطي مثالًا من مشروعك لكل واحدة.</span></li>
+        <li><span>لماذا يبقى الـlayout ظاهرًا أثناء تغيير الـroute؟ وما الذي يتغيّر فعلًا؟</span></li>
+        <li><span>عندما انتقلتِ من البيانات المكتوبة في الكود (Task 5) إلى HttpClient (Task 6)، أي الملفات تغيرت؟ ولماذا لم يتغير <code>Dashboard</code>؟</span></li>
+        <li><span>لماذا لا يعني نجاح <code>ng serve</code> أن الـTask انتهت؟</span></li>
+        <li><span>لماذا كانت الـtests تفشل بعد أن غيّرتِ أسماء الملفات؟</span></li>
+      </ol>
+    </section>
+
+    <!-- ================= Challenge ================= -->
+    <section id="challenge" class="challenge">
+      <div class="eyebrow">Final Challenge</div>
+      <h2>Low Stock Badge</h2>
+      <div>
+        <h4>المطلوب</h4>
+        <ul>
+          <li>أضيفي badge اسمه <strong>Low Stock</strong> على كارت المنتج عندما يكون الـstock <strong>أكبر من 0 وأقل من أو يساوي 5</strong>.</li>
+          <li>المنتج الذي stock عنده 0 يبقى <strong>Out of Stock</strong> فقط، ولا يظهر عليه Low Stock.</li>
+          <li>لو قررنا لاحقًا أن الحد هو 10 بدل 5، يجب أن يكون التعديل في <strong>مكان واحد فقط</strong>.</li>
+        </ul>
+      </div>
+      <div>
+        <h4>النتيجة المتوقعة مع البيانات الحالية</h4>
+        <div class="demo-badges">
+          <div class="demo-card"><b>Sony WH-1000XM5</b><span>stock: 12</span><span class="tag none">no stock badge change</span></div>
+          <div class="demo-card"><b>MacBook Air M3</b><span>stock: 5</span><span class="tag low">Low Stock</span></div>
+          <div class="demo-card"><b>iPhone 15</b><span>stock: 0</span><span class="tag out">Out of Stock</span></div>
+        </div>
+      </div>
+      <div>
+        <h4>الشروط</h4>
+        <ol>
+          <li><strong>أول 15 دقيقة بدون AI.</strong></li>
+          <li>بعدها مسموح أن تستخدمي AI لشرح مشكلة محددة (مثل error أو سلوك غير متوقع)، وليس لتوليد الـfeature كاملة.</li>
+          <li>بعد الانتهاء اشرحي: أي ملف عدّلتِ ولماذا هذا الملف؛ ولماذا لم تحتاجي تعديل الـservice أو الـDashboard، أو لماذا احتجتِ؛ وكيف يتصرف الـbadge بعد حذف منتج أو تغيير الـstock في الـJSON.</li>
+        </ol>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer>Electra Admin Dashboard · Integration Review · commit <code>0ef165b</code></footer>
+
+<script>
+(function () {
+  var PREFIX = 'electra-review:';
+  function read(key) { try { return localStorage.getItem(PREFIX + key); } catch (e) { return null; } }
+  function write(key, val) { try { localStorage.setItem(PREFIX + key, val); } catch (e) {} }
+  function remove(key) { try { localStorage.removeItem(PREFIX + key); } catch (e) {} }
+
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('.problem input[type=checkbox], #dod input[type=checkbox]'));
+  var notes = Array.prototype.slice.call(document.querySelectorAll('.note textarea'));
+
+  boxes.forEach(function (b) { if (read(b.id) === '1') b.checked = true; });
+  notes.forEach(function (t) { var v = read(t.id); if (v) t.value = v; });
+
+  function update() {
+    var total = 0, done = 0;
+    document.querySelectorAll('.problem').forEach(function (p) {
+      var cbs = p.querySelectorAll('.done input[type=checkbox]');
+      var n = cbs.length, c = 0;
+      cbs.forEach(function (x) { if (x.checked) c++; });
+      total += n; done += c;
+      var badge = p.querySelector('[data-progress]');
+      if (badge) {
+        badge.textContent = c + '/' + n;
+        badge.classList.toggle('complete', n > 0 && c === n);
+      }
+    });
+    document.getElementById('overall-count').textContent = done + ' / ' + total;
+    document.getElementById('overall-bar').style.width = total ? (done / total * 100) + '%' : '0';
+  }
+
+  boxes.forEach(function (b) {
+    b.addEventListener('change', function () { b.checked ? write(b.id, '1') : remove(b.id); update(); });
+  });
+  notes.forEach(function (t) {
+    t.addEventListener('input', function () { write(t.id, t.value); });
+  });
+  document.getElementById('dod-reset').addEventListener('click', function () {
+    document.querySelectorAll('#dod input[type=checkbox]').forEach(function (b) { b.checked = false; remove(b.id); });
+  });
+  update();
+})();
+</script>
+</body>
+</html>
