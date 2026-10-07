@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { Header } from '../../layout/header/header';
 import { Sidebar } from '../../layout/sidebar/sidebar';
@@ -27,11 +27,11 @@ export class Dashboard {
 
   error = this.productService.getError();
 
-  productsCount = 128;
+  productsCount = computed(() => this.products().length);
 
   ordersCount = 36;
 
-  categoriesCount = this.categories().length;
+  categoriesCount = computed(() => this.categories().length);
 
   revenue = 8450;
 

@@ -68,3 +68,30 @@
   background: #edf0f5;
   color: #697386;
 }
+/* Footer */
+
+.product-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #eeeef5;
+}
+
+.view-btn {
+  border: none;
+  background: transparent;
+  color: #25205d;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.more-btn {
+  border: none;
+  background: transparent;
+  color: #25205d;
+  font-size: 24px;
+  cursor: pointer;
+}

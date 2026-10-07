@@ -42,4 +42,7 @@ export class ProductService {
   deleteProduct(id: number) {
     this.products.update((products) => products.filter((product) => product.id !== id));
   }
+  // getIds() {
+  //   return this.products().map((product) => String(product.id));
+  // }
 }

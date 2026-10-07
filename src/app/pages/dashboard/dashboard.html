@@ -1,81 +1,69 @@
-<app-header></app-header>
+<div class="dashboard-header">
+  <h1><span class="electra-text">Electra</span> Dashboard</h1>
+  <p>Welcome to your electronics store admin panel 👋</p>
+</div>
 
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-12 col-md-3">
-      <app-sidebar></app-sidebar>
-    </div>
+<!-- Stat Cards -->
+<div class="row g-4 mt-2">
+  <div class="col-12 col-sm-6 col-lg-3">
+    <app-stat-card title="Total Products" [value]="productsCount()" icon="📦"> </app-stat-card>
+  </div>
 
-    <main class="col-12 col-md-9">
-      <div class="dashboard-header">
-        <h1><span class="electra-text">Electra</span> Dashboard</h1>
-        <p>Welcome to your electronics store admin panel 👋</p>
-      </div>
+  <div class="col-12 col-sm-6 col-lg-3">
+    <app-stat-card title="Total Orders" [value]="ordersCount" icon="🧾"> </app-stat-card>
+  </div>
 
-      <!-- Stat Cards -->
-      <div class="row g-4 mt-2">
-        <div class="col-12 col-sm-6 col-lg-3">
-          <app-stat-card title="Total Products" [value]="productsCount" icon="📦"> </app-stat-card>
-        </div>
+  <div class="col-12 col-sm-6 col-lg-3">
+    <app-stat-card title="Categories" [value]="categoriesCount()" icon="🗂️"> </app-stat-card>
+  </div>
 
-        <div class="col-12 col-sm-6 col-lg-3">
-          <app-stat-card title="Total Orders" [value]="ordersCount" icon="🧾"> </app-stat-card>
-        </div>
-
-        <div class="col-12 col-sm-6 col-lg-3">
-          <app-stat-card title="Categories" [value]="categoriesCount" icon="🗂️"> </app-stat-card>
-        </div>
-
-        <div class="col-12 col-sm-6 col-lg-3">
-          <app-stat-card title="Revenue" [value]="revenue" icon="💰"> </app-stat-card>
-        </div>
-      </div>
-      <!-- Products Section -->
-      <div class="products-header">
-        <div>
-          <h2>Products</h2>
-          <p>Manage your products and inventory.</p>
-        </div>
-
-        <button class="add-product-btn">+ Add Product</button>
-      </div>
-
-      <div class="row g-4">
-        @if (loading()) {
-          <p>Loading products...</p>
-        } @else if (error()) {
-          <div class="alert alert-danger">
-            <p class="mb-2">{{ error() }}</p>
-
-            <button class="btn btn-danger" (click)="retryProducts()">Retry</button>
-          </div>
-        } @else {
-          @for (product of products(); track product.id) {
-            <div class="col-12 col-md-6 col-lg-4">
-              <app-product-card
-                [product]="product"
-                (deleteProduct)="handleDelete($event)"
-                (viewProduct)="handleView($event)"
-              ></app-product-card>
-            </div>
-          } @empty {
-            <div class="col-12">
-              <div class="empty-state">
-                📦
-                <h5>No products found</h5>
-                <p>There are no products to display.</p>
-              </div>
-            </div>
-          }
-        }
-      </div>
-      @if (showConfirm) {
-        <app-confirm-dialog
-          [message]="'Are you sure you want to delete this product?'"
-          (confirmed)="confirmDelete()"
-          (cancelled)="cancelDelete()"
-        ></app-confirm-dialog>
-      }
-    </main>
+  <div class="col-12 col-sm-6 col-lg-3">
+    <app-stat-card title="Revenue" [value]="revenue" icon="💰"> </app-stat-card>
   </div>
 </div>
+<!-- Products Section -->
+<div class="products-header">
+  <div>
+    <h2>Products</h2>
+    <p>Manage your products and inventory.</p>
+  </div>
+
+  <button class="add-product-btn">+ Add Product</button>
+</div>
+
+<div class="row g-4">
+  @if (loading()) {
+    <p>Loading products...</p>
+  } @else if (error()) {
+    <div class="alert alert-danger">
+      <p class="mb-2">{{ error() }}</p>
+
+      <button class="btn btn-danger" (click)="retryProducts()">Retry</button>
+    </div>
+  } @else {
+    @for (product of products(); track product.id) {
+      <div class="col-12 col-md-6 col-lg-4">
+        <app-product-card
+          [product]="product"
+          (deleteProduct)="handleDelete($event)"
+          (viewProduct)="handleView($event)"
+        ></app-product-card>
+      </div>
+    } @empty {
+      <div class="col-12">
+        <div class="empty-state">
+          📦
+          <h5>No products found</h5>
+          <p>There are no products to display.</p>
+        </div>
+      </div>
+    }
+  }
+</div>
+@if (showConfirm) {
+  <app-confirm-dialog
+    [message]="'Are you sure you want to delete this product?'"
+    (confirmed)="confirmDelete()"
+    (cancelled)="cancelDelete()"
+  ></app-confirm-dialog>
+}

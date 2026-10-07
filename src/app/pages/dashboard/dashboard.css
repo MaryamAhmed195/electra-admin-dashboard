@@ -1,9 +1,3 @@
-main {
-  min-height: 100vh;
-  padding: 100px 40px 50px;
-  background: #f8f7ff;
-}
-
 .dashboard-header {
   text-align: center;
   margin-bottom: 40px;
@@ -63,34 +57,6 @@ main {
 .add-product-btn:hover {
   background: #5938e8;
   transform: translateY(-2px);
-}
-
-/* Footer */
-
-.product-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid #eeeef5;
-}
-
-.view-btn {
-  border: none;
-  background: transparent;
-  color: #25205d;
-  font-weight: 600;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-.more-btn {
-  border: none;
-  background: transparent;
-  color: #25205d;
-  font-size: 24px;
-  cursor: pointer;
 }
 
 .empty-state {
